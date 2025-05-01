@@ -10,7 +10,7 @@ library(car)        # for VIF and Anova
 library(DescTools)  # for CMH test
 
 # Load the Excel data
-data <- read.csv("C:/Users/Luigi/OneDrive/ZHAW/6. Semester/BiEp/Projekt/adult23.csv.xls")
+data <- read.csv("C:/Users/Luigi/OneDrive/ZHAW/6. Semester/BiEp_Sem6/adult23.csv")
 
 # Preview the data
 str(data)
@@ -31,7 +31,7 @@ contingency_table <- table(filtered$EDUCP_A, filtered$LCVDACT_A)
 chisq.test(contingency_table)
 
 
-######## Logistic Regression
+######## Ordinal Logistic Regression
 
 library(MASS)
 
@@ -56,23 +56,34 @@ p <- pnorm(abs(ctable[, "t value"]), lower.tail = FALSE) * 2
 ######## Multivariate Logistic Regression
 
 multi_data <- subset(data,
-                     !is.na(LONGCOVD1_A) &
-                       !(EDUCP_A %in% c(97, 99)) &
-                       !is.na(INCWRKO_A) &
-                       !(MEDCOST_A %in% c(7, 9)) &
-                       !is.na(SEX_A) & !is.na(AGEP_A))
+                     LONGCOVD1_A %in% c(1, 2) &               # keep only Yes/No
+                       !(EDUCP_A %in% c(97, 99)) &              # valid education
+                       !is.na(INCWRKO_A) &                      # valid income
+                       !(HISTOPCOST_A %in% c(7, 9)) &           # valid healthcare access
+                       !is.na(SEX_A) & !is.na(AGEP_A))          # valid sex and age
 
+# Recode outcome variable to binary 0/1
+multi_data$LONGCOVD1_A <- ifelse(multi_data$LONGCOVD1_A == 1, 1, 0)
+
+# Convert predictors to factors
 multi_data$EDUCP_A <- factor(multi_data$EDUCP_A)
 multi_data$INCWRKO_A <- factor(multi_data$INCWRKO_A)
-multi_data$MEDCOST_A <- factor(multi_data$MEDCOST_A)
+multi_data$HISTOPCOST_A <- factor(multi_data$HISTOPCOST_A,
+                                  levels = c(1, 2),
+                                  labels = c("Yes", "No"))
 multi_data$SEX_A <- factor(multi_data$SEX_A)
 
-model_multi <- glm(LONGCOVD1_A ~ EDUCP_A + INCWRKO_A + MEDCOST_A + SEX_A + AGEP_A,
+# Fit logistic regression model
+model_multi <- glm(LONGCOVD1_A ~ EDUCP_A + INCWRKO_A + HISTOPCOST_A + SEX_A + AGEP_A,
                    data = multi_data,
                    family = binomial)
 
+# View summary and odds ratios
 summary(model_multi)
-exp(coef(model_multi))  # Odds Ratios
+exp(coef(model_multi))        # Odds Ratios
+confint(model_multi)          # Confidence Intervals
+
+
 
 
 ######## Effect Size for ANOVA-lika Analysis
@@ -92,15 +103,23 @@ etaSquared(anova_model)
 
 ######## Cochran–Mantel–Haenszel (CMH) Test
 
-filtered <- subset(data, LONGCOVD1_A == 1 & !(EDUCP_A %in% c(97, 99)) &
-                     !(LCVDACT_A %in% c(8, 9)) & !is.na(SEX_A))
 
+filtered <- subset(data,
+                   LONGCOVD1_A == 1 &
+                     !(EDUCP_A %in% c(97, 99)) &
+                     !(LCVDACT_A %in% c(8, 9)) &
+                     SEX_A %in% c(1, 2))  # only valid strata
+
+# Convert variables to factors
 filtered$EDUCP_A <- factor(filtered$EDUCP_A)
 filtered$LCVDACT_A <- factor(filtered$LCVDACT_A)
 filtered$SEX_A <- factor(filtered$SEX_A)
 
+# Build table and rerun CMH test
 cmh_table <- xtabs(~ EDUCP_A + LCVDACT_A + SEX_A, data = filtered)
 mantelhaen.test(cmh_table)
+
+
 
 
 ######## Visualization (Stacked Bar Plot)
@@ -138,4 +157,8 @@ ggplot(plot_df, aes(x = Education, y = Percentage, fill = Severity)) +
 # List all column names containing 'income' or 'INC'
 grep("income", names(data), ignore.case = TRUE, value = TRUE)
 grep("INC", names(data), value = TRUE)
+
+
+grep("cost", names(data), ignore.case = TRUE, value = TRUE)
+grep("care", names(data), ignore.case = TRUE, value = TRUE)
 
