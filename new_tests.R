@@ -1,4 +1,4 @@
-######## Setup and load data
+######## Setup and load data ########
 
 # Load required packages
 install.packages(c("readxl", "ggplot2", "MASS", "ordinal", "car", "DescTools"))
@@ -16,7 +16,7 @@ data <- read.csv("C:/Users/Luigi/OneDrive/ZHAW/6. Semester/BiEp_Sem6/adult23.csv
 str(data)
 
 
-######## Chi-Squared Test
+######## Chi-Squared Test ########
 
 filtered <- subset(data, LONGCOVD1_A == 1 & !(EDUCP_A %in% c(97, 99)) & !(LCVDACT_A %in% c(8, 9)))
 
@@ -52,7 +52,7 @@ ggplot(df_plot, aes(x = Education, y = Percentage, fill = Severity)) +
 
 
 
-######## Ordinal Logistic Regression
+######## Ordinal Logistic Regression ########
 
 library(MASS)
 
@@ -81,7 +81,7 @@ mantelhaen.test(cmh_table)
 
 
 
-######## Multivariate Logistic Regression
+######## Multivariate Logistic Regression ########
 
 multi_data <- subset(data,
                      LONGCOVD1_A %in% c(1, 2) &               # keep only Yes/No
@@ -127,7 +127,7 @@ kable(round(result_table, 3), caption = "Odds Ratios for Long COVID Presence")
 
 
 
-######## Effect Size for ANOVA-lika Analysis
+######## Effect Size for ANOVA-lika Analysis ########
 
 anova_data <- subset(data, !is.na(PHQ2SCREEN_A) & !is.na(EDUCP_A) & !is.na(INCWRKO_A))
 
@@ -153,7 +153,7 @@ ggplot(multi_data, aes(x = AGEP_A, y = LONGCOVD1_A)) +
 
 
 
-######## Cochran–Mantel–Haenszel (CMH) Test
+######## Cochran–Mantel–Haenszel (CMH) Test ########
 
 
 filtered <- subset(data,
@@ -174,7 +174,7 @@ mantelhaen.test(cmh_table)
 
 
 
-######## Visualization (Stacked Bar Plot)
+######## Visualization (Stacked Bar Plot) ######## 
 
 library(ggplot2)
 
@@ -193,6 +193,59 @@ ggplot(plot_df, aes(x = Education, y = Percentage, fill = Severity)) +
 
 write.csv(result_table, "logistic_model_results.csv")
 write.csv(df_plot, "severity_by_education_plotdata.csv")
+
+
+
+
+
+
+
+
+
+######## Interaction Effects in Logistic Regression ########
+
+model_interaction <- glm(LONGCOVD1_A ~ EDUCP_A * INCWRKO_A + HISTOPCOST_A + SEX_A + AGEP_A,
+                         data = multi_data, family = binomial)
+
+summary(model_interaction)
+
+
+
+
+
+
+
+
+
+
+######## Stratified Logistic Regression ########
+
+young <- subset(multi_data, AGEP_A < 40)
+old <- subset(multi_data, AGEP_A >= 40)
+
+glm(LONGCOVD1_A ~ EDUCP_A + INCWRKO_A + HISTOPCOST_A, data = young, family = binomial)
+glm(LONGCOVD1_A ~ EDUCP_A + INCWRKO_A + HISTOPCOST_A, data = old, family = binomial)
+
+
+
+
+######## Heatmap: Cross-tab of Severity × Education × Income ########
+
+library(ggplot2)
+
+filtered$Income <- factor(filtered$INCWRKO_A)
+heat_data <- as.data.frame(table(filtered$EDUCP_A, filtered$Income, filtered$SeverityLabel))
+colnames(heat_data) <- c("Education", "Income", "Severity", "Count")
+
+ggplot(heat_data, aes(x = Education, y = Income, fill = Count)) +
+  geom_tile() +
+  facet_wrap(~ Severity) +
+  scale_fill_viridis_c() +
+  labs(title = "Long COVID Severity: Education × Income", x = "Education", y = "Income") +
+  theme_minimal()
+
+
+
 
 
 
