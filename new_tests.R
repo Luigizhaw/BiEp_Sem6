@@ -245,13 +245,110 @@ ggplot(heat_data, aes(x = Education, y = Income, fill = Count)) +
   theme_minimal()
 
 
+######## Occupational Risk Analysis ########
+
+# Compare Long COVID prevalence by occupation group
+table(data$LONGCOVD1_A, data$EMDOCCUPN1_A)
+
+# Logistic model with occupation
+model_occ <- glm(LONGCOVD1_A ~ factor(EMDOCCUPN1_A) + EDUCP_A + INCWRKO_A, 
+                 data = multi_data, family = binomial)
+summary(model_occ)
+
+
+
+######## SES Disadvantage Index ########
+
+multi_data$SES_Index <- 
+  as.numeric(multi_data$EDUCP_A %in% 1:3) +     # low education
+  as.numeric(multi_data$INCWRKO_A %in% 1:4) +   # low income
+  as.numeric(multi_data$HISTOPCOST_A == "Yes")  # had to stop insurance due to cost
+
+ggplot(multi_data, aes(x = SES_Index, fill = factor(LONGCOVD1_A))) +
+  geom_bar(position = "fill") +
+  labs(title = "Long COVID Prevalence by SES Disadvantage Score", y = "Proportion")
+
+
+
+######## Follow up-regression ########
+
+model_ses <- glm(LONGCOVD1_A ~ SES_Index + AGEP_A + SEX_A,
+                 data = multi_data, family = binomial)
+summary(model_ses)
+exp(coef(model_ses))  # Odds ratios
+
+
+######## Ordinal regression for severity ########
+
+severity_data <- subset(multi_data, LONGCOVD1_A == 1 & !is.na(LCVDACT_A))
+severity_data$LCVDACT_A <- as.numeric(as.character(severity_data$LCVDACT_A))
+
+# Use ordinal logistic regression
+library(MASS)
+model_severity <- polr(factor(LCVDACT_A, ordered = TRUE) ~ SES_Index + AGEP_A + SEX_A,
+                       data = severity_data, Hess = TRUE)
+summary(model_severity)
+
+
+######## Facet bar plots by sex or age group ########
+
+ggplot(multi_data, aes(x = SES_Index, fill = factor(LONGCOVD1_A))) +
+  geom_bar(position = "fill") +
+  facet_wrap(~ SEX_A, labeller = label_both) +
+  labs(title = "Long COVID Prevalence by SES and Sex",
+       y = "Proportion", fill = "Long COVID")
 
 
 
 
+######## (Healthcare Access Barrier) to Prevalence Model ########
+
+# Make sure HISTOPCOST_A is a clean factor
+multi_data <- subset(multi_data, HISTOPCOST_A %in% c("Yes", "No"))
+multi_data$HISTOPCOST_A <- factor(multi_data$HISTOPCOST_A, levels = c("No", "Yes"))
+
+# Update model
+model_ses_access <- glm(LONGCOVD1_A ~ SES_Index + HISTOPCOST_A + AGEP_A + SEX_A,
+                        data = multi_data, family = binomial)
+
+summary(model_ses_access)
+exp(cbind(OddsRatio = coef(model_ses_access), confint(model_ses_access)))
 
 
 
+######## Test for SES × Sex Interaction (Moderation) ########
+
+model_interaction <- glm(LONGCOVD1_A ~ SES_Index * SEX_A + AGEP_A,
+                         data = multi_data, family = binomial)
+
+summary(model_interaction)
+
+
+
+######## Visualize SES × Sex Interaction ########
+
+library(ggplot2)
+
+ggplot(multi_data, aes(x = SES_Index, fill = factor(LONGCOVD1_A))) +
+  geom_bar(position = "fill") +
+  facet_wrap(~ SEX_A, labeller = label_both) +
+  labs(title = "Long COVID Prevalence by SES and Sex",
+       x = "SES Disadvantage Index", y = "Proportion",
+       fill = "Long COVID (0 = No, 1 = Yes)") +
+  theme_minimal()
+
+
+
+######## Rebuild SES Index with components ########
+
+multi_data$SES_Education <- as.numeric(multi_data$EDUCP_A %in% c(1, 2, 3))
+multi_data$SES_Income    <- as.numeric(multi_data$INCWRKO_A %in% c(1, 2, 3, 4))
+multi_data$SES_Access    <- as.numeric(multi_data$HISTOPCOST_A == "Yes")
+
+# Visualize contribution of each SES component
+logit_components <- glm(LONGCOVD1_A ~ SES_Education + SES_Income + SES_Access + SEX_A + AGEP_A,
+                        data = multi_data, family = binomial)
+summary(logit_components)
 
 
 
