@@ -30,6 +30,27 @@ contingency_table <- table(filtered$EDUCP_A, filtered$LCVDACT_A)
 # Chi-squared test
 chisq.test(contingency_table)
 
+library(ggplot2)
+
+# Use the already filtered data
+filtered$SeverityLabel <- factor(filtered$LCVDACT_A, levels = c(1, 2, 3),
+                                 labels = c("Not at all", "A little", "A lot"))
+
+# Proportional table
+plot_data <- prop.table(table(filtered$EDUCP_A, filtered$SeverityLabel), margin = 1) * 100
+df_plot <- as.data.frame(plot_data)
+colnames(df_plot) <- c("Education", "Severity", "Percentage")
+
+ggplot(df_plot, aes(x = Education, y = Percentage, fill = Severity)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  scale_fill_manual(values = c("Not at all" = "green", "A little" = "yellow", "A lot" = "red")) +
+  labs(title = "Long COVID Severity by Education Level",
+       y = "Percentage", x = "Education Level (EDUCP_A)") +
+  theme_minimal()
+
+
+
+
 
 ######## Ordinal Logistic Regression
 
@@ -51,6 +72,13 @@ summary(model_ord)
 (ctable <- coef(summary(model_ord)))
 p <- pnorm(abs(ctable[, "t value"]), lower.tail = FALSE) * 2
 (ctable <- cbind(ctable, "p value" = round(p, 4)))
+
+# View contingency table stratified by sex
+table(filtered$EDUCP_A, filtered$SeverityLabel, filtered$SEX_A)
+
+# Results
+mantelhaen.test(cmh_table)
+
 
 
 ######## Multivariate Logistic Regression
@@ -83,6 +111,19 @@ summary(model_multi)
 exp(coef(model_multi))        # Odds Ratios
 confint(model_multi)          # Confidence Intervals
 
+# Get coefficients and p-values
+summary_table <- summary(model_multi)$coefficients
+
+# Compute Odds Ratios and CI
+ORs <- exp(coef(model_multi))
+CIs <- exp(confint(model_multi))
+result_table <- cbind(OR = ORs, CI_lower = CIs[,1], CI_upper = CIs[,2], summary_table[,4, drop = FALSE])
+round(result_table, 3)
+
+# View nicely in R
+library(knitr)
+kable(round(result_table, 3), caption = "Odds Ratios for Long COVID Presence")
+
 
 
 
@@ -97,8 +138,19 @@ anova_model <- aov(PHQ2SCREEN_A ~ EDUCP_A + INCWRKO_A, data = anova_data)
 summary(anova_model)
 
 # Effect size
+install.packages("effects")
 library(lsr)
 etaSquared(anova_model)
+
+library(effects)
+plot(allEffects(model_ord), main = "Effect of Education and Income on Long COVID Severity")
+ggplot(multi_data, aes(x = AGEP_A, y = LONGCOVD1_A)) +
+  geom_smooth(method = "loess") +
+  labs(title = "Age vs Long COVID Risk",
+       x = "Age", y = "Probability of Long COVID") +
+  theme_minimal()
+
+
 
 
 ######## Cochran–Mantel–Haenszel (CMH) Test
@@ -139,6 +191,8 @@ ggplot(plot_df, aes(x = Education, y = Percentage, fill = Severity)) +
 
 
 
+write.csv(result_table, "logistic_model_results.csv")
+write.csv(df_plot, "severity_by_education_plotdata.csv")
 
 
 
@@ -161,4 +215,77 @@ grep("INC", names(data), value = TRUE)
 
 grep("cost", names(data), ignore.case = TRUE, value = TRUE)
 grep("care", names(data), ignore.case = TRUE, value = TRUE)
+
+
+nrow(filtered)
+table(filtered$EDUCP_A, filtered$LCVDACT_A)
+
+plot_data <- prop.table(table(filtered$EDUCP_A, filtered$SeverityLabel), margin = 1) * 100
+as.data.frame(plot_data)
+
+
+
+filtered$SeverityLabel <- factor(filtered$LCVDACT_A, 
+                                 levels = c(1, 2, 3),
+                                 labels = c("Not at all", "A little", "A lot"))
+
+
+
+# Recreate SeverityLabel directly from LCVDACT_A as character levels
+filtered$SeverityLabel <- factor(as.numeric(as.character(filtered$LCVDACT_A)),
+                                 levels = c(1, 2, 3),
+                                 labels = c("Not at all", "A little", "A lot"))
+
+
+# Proportional table
+plot_data <- prop.table(table(filtered$EDUCP_A, filtered$SeverityLabel), margin = 1) * 100
+df_plot <- as.data.frame(plot_data)
+colnames(df_plot) <- c("Education", "Severity", "Percentage")
+
+# Plot
+ggplot(df_plot, aes(x = Education, y = Percentage, fill = Severity)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  scale_fill_manual(values = c("Not at all" = "green", "A little" = "yellow", "A lot" = "red")) +
+  labs(title = "Long COVID Severity by Education Level",
+       x = "Education Level (EDUCP_A)", y = "Percentage (%)") +
+  theme_minimal()
+
+# Fresh filtered dataset
+filtered <- subset(data,
+                   LONGCOVD1_A == 1 &
+                     !(EDUCP_A %in% c(97, 99)) &
+                     !(LCVDACT_A %in% c(8, 9)) &
+                     SEX_A %in% c(1, 2))  # keep valid sexes
+
+# Convert to numeric if LCVDACT_A is stored as factor
+filtered$LCVDACT_A <- as.numeric(as.character(filtered$LCVDACT_A))
+
+# Create clean severity label factor
+filtered$SeverityLabel <- factor(filtered$LCVDACT_A,
+                                 levels = c(1, 2, 3),
+                                 labels = c("Not at all", "A little", "A lot"))
+
+# Check
+table(filtered$EDUCP_A, filtered$SeverityLabel)
+
+
+
+library(ggplot2)
+
+# Proportional table
+prop_tab <- prop.table(table(filtered$EDUCP_A, filtered$SeverityLabel), margin = 1) * 100
+df_plot <- as.data.frame(prop_tab)
+colnames(df_plot) <- c("Education", "Severity", "Percentage")
+
+# Fix factor levels for EDUCP_A (to show in order)
+df_plot$Education <- factor(df_plot$Education, levels = as.character(1:10))
+
+# Plot
+ggplot(df_plot, aes(x = Education, y = Percentage, fill = Severity)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  scale_fill_manual(values = c("Not at all" = "green", "A little" = "yellow", "A lot" = "red")) +
+  labs(title = "Long COVID Severity by Education Level",
+       x = "Education Level (EDUCP_A)", y = "Percentage (%)") +
+  theme_minimal()
+
 
