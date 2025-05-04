@@ -1,7 +1,7 @@
 ######## Setup and load data ########
 
 # Load required packages
-install.packages(c("readxl", "ggplot2", "MASS", "ordinal", "car", "DescTools"))
+install.packages(("scico"))
 library(readxl)
 library(ggplot2)
 library(MASS)       # for polr
@@ -17,38 +17,86 @@ str(data)
 
 
 ######## Chi-Squared Test ########
+# Load required libraries
+library(ggplot2)
+library(scico)
+library(ggpubr)
 
-filtered <- subset(data, LONGCOVD1_A == 1 & !(EDUCP_A %in% c(97, 99)) & !(LCVDACT_A %in% c(8, 9)))
+# ================================
+# SECTION 1: Prevalence Analysis
+# ================================
+
+# Filter valid cases for prevalence test
+filtered_prev <- subset(data,
+                        LONGCOVD1_A %in% c(1, 2) &
+                          !(EDUCP_A %in% c(97, 99)))
+
+# Convert to factors
+filtered_prev$LONGCOVD1_A <- factor(filtered_prev$LONGCOVD1_A,
+                                    levels = c(1, 2),
+                                    labels = c("Yes", "No"))
+filtered_prev$EDUCP_A <- factor(filtered_prev$EDUCP_A)
+
+# Education level labels
+edu_labels <- c(
+  "1" = "<9th grade", "2" = "9–11th grade", "3" = "High school", 
+  "4" = "Some college", "5" = "Assoc. (vocational)", "6" = "Assoc. (academic)", 
+  "7" = "Bachelor's", "8" = "Master's", "9" = "Professional", "10" = "Doctorate"
+)
+
+# Chi-squared test: Education vs Long COVID Prevalence
+contingency_prev <- table(filtered_prev$EDUCP_A, filtered_prev$LONGCOVD1_A)
+chisq.test(contingency_prev)
+
+# Plot: Prevalence by education
+ggplot(filtered_prev, aes(x = EDUCP_A, fill = LONGCOVD1_A)) +
+  geom_bar(position = "fill") +
+  scale_x_discrete(labels = edu_labels) +
+  scale_fill_scico_d(palette = "vik", direction = -1) +
+  labs(title = "Prevalence of Long COVID by Education Level",
+       x = "Education Level", y = "Proportion",
+       fill = "Long COVID") +
+  theme_pubr(base_size = 14) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+
+# ================================
+# SECTION 2: Severity Analysis
+# ================================
+
+# Filter valid cases for severity test
+filtered <- subset(data, 
+                   LONGCOVD1_A == 1 & 
+                     !(EDUCP_A %in% c(97, 99)) & 
+                     !(LCVDACT_A %in% c(8, 9)))
 
 # Convert to factors
 filtered$EDUCP_A <- factor(filtered$EDUCP_A)
-filtered$LCVDACT_A <- factor(filtered$LCVDACT_A, levels = c(1, 2, 3), labels = c("Not at all", "A little", "A lot"))
+filtered$LCVDACT_A <- factor(filtered$LCVDACT_A, 
+                             levels = c(1, 2, 3), 
+                             labels = c("Not at all", "A little", "A lot"))
 
-# Contingency table
+# Chi-squared test: Education vs Long COVID Severity
 contingency_table <- table(filtered$EDUCP_A, filtered$LCVDACT_A)
-
-# Chi-squared test
 chisq.test(contingency_table)
 
-library(ggplot2)
-
-# Use the already filtered data
-filtered$SeverityLabel <- factor(filtered$LCVDACT_A, levels = c(1, 2, 3),
-                                 labels = c("Not at all", "A little", "A lot"))
-
-# Proportional table
+# Prepare data for plot
+filtered$SeverityLabel <- filtered$LCVDACT_A
 plot_data <- prop.table(table(filtered$EDUCP_A, filtered$SeverityLabel), margin = 1) * 100
 df_plot <- as.data.frame(plot_data)
 colnames(df_plot) <- c("Education", "Severity", "Percentage")
 
+# Plot: Severity by education
 ggplot(df_plot, aes(x = Education, y = Percentage, fill = Severity)) +
   geom_bar(stat = "identity", position = "dodge") +
-  scale_fill_manual(values = c("Not at all" = "green", "A little" = "yellow", "A lot" = "red")) +
+  scale_x_discrete(labels = edu_labels) +
+  scale_fill_manual(values = c("Not at all" = "#66c2a5", 
+                               "A little" = "#fc8d62", 
+                               "A lot" = "#8da0cb")) +
   labs(title = "Long COVID Severity by Education Level",
-       y = "Percentage", x = "Education Level (EDUCP_A)") +
-  theme_minimal()
-
-
+       y = "Percentage (%)", x = "Education Level") +
+  theme_pubr(base_size = 14) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
 
 
 
@@ -437,5 +485,60 @@ ggplot(df_plot, aes(x = Education, y = Percentage, fill = Severity)) +
   labs(title = "Long COVID Severity by Education Level",
        x = "Education Level (EDUCP_A)", y = "Percentage (%)") +
   theme_minimal()
+
+model_full <- glm(LONGCOVD1_A ~ EDUCP_A + INCWRKO_A + HISTOPCOST_A +
+                    AGEP_A + SEX_A + RACEALLP_A + URBRRL +
+                    DISAB3_A + PHQ2SCREEN_A + GAD2SCREEN_A +
+                    EMPWRKFT1_A + EMDINDSTN1_A + EMDOCCUPN1_A,
+                  data = multi_data, family = binomial)
+summary(model_full)
+
+
+
+
+library(MASS)
+
+model_severity <- polr(factor(LCVDACT_A, ordered = TRUE) ~
+                         EDUCP_A + INCWRKO_A + HISTOPCOST_A +
+                         AGEP_A + SEX_A + DISAB3_A + PHQ2SCREEN_A,
+                       data = your_data, Hess = TRUE)
+summary(model_severity)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# Load required libraries
+library(ggplot2)
+library(broom)
+library(dplyr)
+library(forcats)
+
+# Tidy the model
+model_tidy <- broom::tidy(model_full, conf.int = TRUE, exponentiate = TRUE) %>%
+  filter(term != "(Intercept)") %>%
+  mutate(term = fct_reorder(term, estimate))  # Sort for better visualization
+
+# Plot
+ggplot(model_tidy, aes(x = estimate, y = term)) +
+  geom_point() +
+  geom_errorbarh(aes(xmin = conf.low, xmax = conf.high), height = 0.2) +
+  geom_vline(xintercept = 1, linetype = "dashed", color = "red") +
+  scale_x_log10() +  # Odds ratios are better on log scale
+  labs(title = "Odds Ratios with 95% Confidence Intervals",
+       x = "Odds Ratio (log scale)", y = "Predictor") +
+  theme_minimal(base_size = 14)
 
 
