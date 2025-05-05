@@ -2,10 +2,11 @@
 title: "Exploring Socioeconomic Factors and Long COVID in U.S. Adults (18–65)"
 author: "Leonard, Cedric, Luigi"
 date: "`r Sys.Date()`"
-output:
-  pdf_document: default
+output: 
   html_document: default
+  pdf_document: default
 ---
+
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
@@ -151,6 +152,7 @@ descriptive_stats <- filtered_clean %>%
 descriptive_stats
 ```
 
+
 ---
 
 ### What Do These Averages Tell Us?
@@ -195,8 +197,15 @@ ggplot(filtered_clean, aes(x = factor(LONGCOV_YN), y = as.numeric(as.character(E
   scale_fill_manual(values = c("#F8766D", "#00BFC4"), labels = c("No", "Yes")) +
   theme_minimal()
 ```
-
+```{r include-poverty-image, echo=FALSE, out.width="70%"}
+knitr::include_graphics("Poverty_ratio.png")
+```
+```{r include-image1, echo=FALSE, out.width="70%"}
+knitr::include_graphics("Education_level.png")
+```
 ---
+
+
 
 ### Why Start With Descriptive Analysis?
 
@@ -242,8 +251,14 @@ ggplot(filtered_clean, aes(x = GENDER, fill = factor(LONGCOV_YN))) +
   scale_fill_manual(values = c("#F8766D", "#00BFC4"), labels = c("No", "Yes")) +
   theme_minimal()
 ```
-
+```{r include-image2, echo=FALSE, out.width="70%"}
+knitr::include_graphics("Access.png")
+```
+```{r include-image3, echo=FALSE, out.width="70%"}
+knitr::include_graphics("gender.png")
+```
 ---
+
 
 ### Summary of the Visual Phase
 
@@ -370,6 +385,9 @@ ggplot(filtered_clean, aes(x = EDUCP_A, fill = factor(LONGCOV_YN))) +
   scale_fill_manual(values = c("#F8766D", "#00BFC4"), labels = c("No", "Yes")) +
   theme_minimal()
 ```
+```{r include-imagee, echo=FALSE, out.width="70%"}
+knitr::include_graphics("proportion by education.png")
+```
 
 ```{r stacked-bar-income}
 ggplot(filtered_clean, aes(x = RATCAT_A, fill = factor(LONGCOV_YN))) +
@@ -383,6 +401,9 @@ ggplot(filtered_clean, aes(x = RATCAT_A, fill = factor(LONGCOV_YN))) +
   ) +
   scale_fill_manual(values = c("#F8766D", "#00BFC4"), labels = c("No", "Yes")) +
   theme_minimal()
+```
+```{r include-image5, echo=FALSE, out.width="70%"}
+knitr::include_graphics("proportion by income.png")
 ```
 
 These plots show clearly that the **proportion** of people reporting Long COVID is **higher** in **lower education and lower income groups**.
@@ -499,6 +520,9 @@ ggplot(model_coefs, aes(x = estimate, y = fct_rev(term))) +
   theme(panel.grid.minor = element_blank())
 
 
+```
+```{r include-image6, echo=FALSE, out.width="70%"}
+knitr::include_graphics("adjusted odds.png")
 ```
 
 ---
