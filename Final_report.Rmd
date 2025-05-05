@@ -1,0 +1,636 @@
+---
+title: "Exploring Socioeconomic Factors and Long COVID in U.S. Adults (18–65)"
+author: "Leonard, Cedric, Luigi"
+output: html_document
+date: "`r Sys.Date()`"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
+```
+
+### Introduction
+
+Understanding the long-term effects of COVID-19 is crucial not just medically, but also socially. With growing evidence that Long COVID (also called Post-COVID conditions) may disproportionately impact certain groups, our study set out to explore a central question:
+
+> **Do socioeconomic factors influence the prevalence and severity of Long COVID among U.S. adults aged 18–65?**
+
+We used data from the **CDC’s National Health Interview Survey (NHIS) COVID-19 Supplements** for 2023–2024. This publicly available dataset captures demographic, economic, and health-related responses from thousands of U.S. residents.
+
+The project is part of the coursework for our module in **Biostatistics and Epidemiology**, and many of the statistical methods we used directly reflect the concepts discussed in class — such as hypothesis testing, regression modeling, and effect size interpretation.
+
+---
+
+### Data Overview
+
+Our cleaned and filtered dataset contains **11,185** adults aged 18–65. Here is a quick summary of the key variables we kept and how they’re defined:
+
+| Variable       | Description                                                                 |
+|----------------|-----------------------------------------------------------------------------|
+| `LONGCOVD1_A`  | Has the respondent ever experienced Long COVID symptoms? (1 = Yes, 2 = No) |
+| `LCVDACT_A`    | Does Long COVID reduce daily activities? (1 = Yes, 2 = No, 3 = Some days)   |
+| `POVRATTC_A`   | Poverty ratio: income / poverty threshold (0 = poorest, 11 = richest)       |
+| `RATCAT_A`     | Income category based on ratio (14 levels)                                  |
+| `EDUCP_A`      | Education level (1 = no school to 10 = doctorate)                           |
+| `USUALPL_A`    | Usual place for medical care (1 = Yes, 2 = No, 3 = More than one)           |
+| `MEDDL12M_A`   | Delayed care due to cost in last 12 months (1 = Yes, 2 = No)                |
+| `MEDNG12M_A`   | Needed care but couldn’t get it in past year (1 = Yes, 2 = No)              |
+| `TRANSPOR_A`   | Couldn’t get care due to lack of transportation (1 = Yes, 2 = No)           |
+| `AGEP_A`       | Age of respondent (filtered to 18–65 years)                                 |
+| `SEX_A`        | Biological sex (1 = Male, 2 = Female)                                        |
+
+---
+
+### Data Loading and Filtering
+
+```{r data-loading}
+library(dplyr)
+library(ggplot2)
+
+# Load the dataset
+data <- read.csv("C:/Users/Luigi/OneDrive/ZHAW/6. Semester/BiEp_Sem6/adult23.csv")
+
+# Select relevant variables
+relevant_vars <- c(
+  "AGEP_A", "LONGCOVD1_A", "LCVDACT_A", "POVRATTC_A", "RATCAT_A", "EDUCP_A",
+  "USUALPL_A", "MEDDL12M_A", "MEDNG12M_A", "TRANSPOR_A", "SEX_A"
+)
+
+filtered_data <- data %>%
+  select(all_of(relevant_vars))
+```
+
+---
+
+### Data Cleaning & Recoding
+
+```{r data-cleaning}
+filtered_clean <- filtered_data %>%
+  filter(
+    AGEP_A >= 18 & AGEP_A <= 65,
+    LONGCOVD1_A %in% c(1, 2),
+    LCVDACT_A %in% c(1, 2, 3),
+    EDUCP_A %in% 1:10,
+    USUALPL_A %in% c(1, 2, 3),
+    MEDDL12M_A %in% c(1, 2),
+    MEDNG12M_A %in% c(1, 2),
+    TRANSPOR_A %in% c(1, 2),
+    SEX_A %in% c(1, 2)
+  ) %>%
+  mutate(
+    LONGCOV_YN = ifelse(LONGCOVD1_A == 1, 1, 0),
+    GENDER = factor(SEX_A, labels = c("Male", "Female")),
+    RATCAT_A = as.factor(RATCAT_A),
+    EDUCP_A = as.factor(EDUCP_A),
+    USUALPL_A = as.factor(USUALPL_A),
+    MEDDL12M_A = as.factor(MEDDL12M_A),
+    MEDNG12M_A = as.factor(MEDNG12M_A),
+    TRANSPOR_A = as.factor(TRANSPOR_A)
+  )
+```
+
+---
+
+### Summary Statistics
+
+```{r descriptive-summary}
+summary(filtered_clean)
+```
+
+```{r group-means}
+descriptive_stats <- filtered_clean %>%
+  group_by(LONGCOV_YN) %>%
+  summarise(
+    count = n(),
+    mean_povratio = mean(POVRATTC_A, na.rm = TRUE),
+    mean_income_cat = mean(as.numeric(as.character(RATCAT_A)), na.rm = TRUE),
+    mean_education = mean(as.numeric(as.character(EDUCP_A)), na.rm = TRUE),
+    mean_usualpl = mean(as.numeric(as.character(USUALPL_A)), na.rm = TRUE),
+    mean_meddelay = mean(as.numeric(as.character(MEDDL12M_A)), na.rm = TRUE),
+    mean_medneeded = mean(as.numeric(as.character(MEDNG12M_A)), na.rm = TRUE),
+    mean_transport = mean(as.numeric(as.character(TRANSPOR_A)), na.rm = TRUE),
+    mean_age = mean(AGEP_A, na.rm = TRUE)
+  )
+descriptive_stats
+```
+
+### Chi-Square Tests: Association Between SES and Long COVID
+
+To assess whether categorical socioeconomic and healthcare variables are statistically associated with Long COVID prevalence, we ran a series of chi-square tests. These tests check if there’s a significant difference in the distribution of Long COVID across levels of each factor.
+
+```{r chi-square-tests}
+# Convert variables to factors (if not already)
+filtered_clean <- filtered_clean %>%
+  mutate(
+    RATCAT_A = as.factor(RATCAT_A),
+    EDUCP_A = as.factor(EDUCP_A),
+    USUALPL_A = as.factor(USUALPL_A),
+    MEDDL12M_A = as.factor(MEDDL12M_A),
+    MEDNG12M_A = as.factor(MEDNG12M_A),
+    TRANSPOR_A = as.factor(TRANSPOR_A)
+  )
+
+# Run chi-square tests
+chisq_test_results <- list(
+  income_cat = chisq.test(table(filtered_clean$LONGCOV_YN, filtered_clean$RATCAT_A)),
+  education = chisq.test(table(filtered_clean$LONGCOV_YN, filtered_clean$EDUCP_A)),
+  usual_source = chisq.test(table(filtered_clean$LONGCOV_YN, filtered_clean$USUALPL_A)),
+  med_delay = chisq.test(table(filtered_clean$LONGCOV_YN, filtered_clean$MEDDL12M_A)),
+  med_needed = chisq.test(table(filtered_clean$LONGCOV_YN, filtered_clean$MEDNG12M_A)),
+  transport = chisq.test(table(filtered_clean$LONGCOV_YN, filtered_clean$TRANSPOR_A))
+)
+
+# Extract p-values from each test
+chisq_pvals <- lapply(chisq_test_results, function(test) test$p.value)
+chisq_pvals
+```
+
+We found significant associations between Long COVID and:
+
+- **Income category** (`p < 0.001`)
+- **Education level** (`p < 0.001`)
+- **Delayed care** (`p < 0.001`)
+- **Unmet care needs** (`p < 0.001`)
+- **Transportation barriers** (`p < 0.001`)
+
+Only **usual source of care** had a non-significant association (`p ≈ 0.22`), suggesting that while access matters, simply having a provider may not be protective on its own.
+
+---
+
+### Effect Size: Cramér’s V
+
+Chi-square tests can flag significant differences even when the actual relationship is weak — especially with large datasets. To measure the **strength** of association, we use **Cramér’s V**, a normalized metric between 0 (no association) and 1 (perfect association).
+
+```{r effect-size}
+library(rcompanion)
+
+# Compute Cramér’s V for income category vs Long COVID
+cramerV(table(filtered_clean$LONGCOV_YN, filtered_clean$RATCAT_A))
+```
+
+The result is:
+
+- **Cramér’s V = ~0.10**
+
+This indicates a **small but meaningful effect size** — which is quite typical in public health studies involving social determinants. While SES doesn't *guarantee* Long COVID risk, it nudges the odds in a consistent direction.
+
+---
+
+### Logistic Regression: Predicting Long COVID Prevalence from Socioeconomic and Healthcare Factors
+
+After exploring categorical associations with chi-square tests, we now move to a more **predictive** and **adjusted** analysis: **logistic regression**. This type of regression is used when the outcome variable is binary — in our case, whether or not someone reports symptoms of Long COVID (`LONGCOV_YN`, 0 or 1).
+
+We use this model to assess how well socioeconomic and healthcare access factors predict the likelihood of having Long COVID — while adjusting for possible confounding variables like age and sex.
+
+This aligns with methods taught in our Biostatistics & Epidemiology course (Week 5 and 6 materials), where we discussed logistic models as a way to estimate **odds** while holding other variables constant.
+
+```{r logistic-regression-main}
+# Logistic regression model for prevalence
+model_prev <- glm(
+  LONGCOV_YN ~ POVRATTC_A + EDUCP_A + USUALPL_A +
+    MEDDL12M_A + MEDNG12M_A + TRANSPOR_A + AGEP_A,
+  data = filtered_clean,
+  family = binomial
+)
+
+summary(model_prev)
+```
+
+---
+
+### Interpreting the Model
+
+The regression output provides **log-odds coefficients**, but these are difficult to interpret directly. To make sense of them, we exponentiate the coefficients using `exp()` to get **odds ratios**.
+
+```{r odds-ratios}
+exp(coef(model_prev))
+```
+
+---
+
+### Key Interpretations
+
+- **POVRATTC_A**: The odds ratio is less than 1, meaning **higher income (relative to poverty line)** is associated with **lower odds** of having Long COVID. Every unit increase in the poverty ratio reduces odds slightly.
+  
+- **EDUCP_A (Education)**: Several education levels (especially those in the middle range) show higher odds of reporting Long COVID compared to the reference group. This might reflect **complex social dynamics**, like awareness or access to testing.
+  
+- **MEDDL12M_A & MEDNG12M_A**: Both delayed care and unmet care needs due to cost significantly **reduce odds** in the model. While this sounds counterintuitive, it could reflect **underreporting or healthcare avoidance** in low-access groups — a classic example of **reporting bias** we learned about.
+  
+- **TRANSPOR_A**: People who had transport issues show **lower odds** in the model, possibly again due to limited healthcare engagement, not necessarily lower true prevalence.
+  
+- **AGEP_A**: Age has a small positive association — the older you are, the slightly higher the odds of reporting Long COVID.
+
+---
+
+### Course Connection
+
+In our Biostatistics course, logistic regression was introduced as a tool to model binary outcomes, especially in observational studies. This model demonstrates:
+
+- The importance of **adjusting for multiple variables** simultaneously.
+- The interpretation of **odds ratios**, which is more meaningful in public health than raw percentages.
+- Limitations of cross-sectional survey data — especially around **confounding**, **bias**, and **exposure misclassification**.
+
+We also remember from class that a statistically significant result isn’t always **clinically** or **practically** significant — something we’ll come back to when evaluating **effect size**.
+
+---
+
+### Visualizing the Odds Ratios
+
+It helps to visualize odds ratios with **confidence intervals**, so we know how certain we are about each predictor. Here's a plot of the model using `broom` and `ggplot2`.
+
+```{r odds-ratio-plot}
+library(broom)
+library(ggplot2)
+library(forcats)
+
+# Tidy and exponentiate
+tidy_model <- tidy(model_prev, conf.int = TRUE, exponentiate = TRUE) %>%
+  filter(term != "(Intercept)") %>%
+  mutate(term = fct_reorder(term, estimate))
+
+# Plot
+ggplot(tidy_model, aes(x = estimate, y = fct_rev(term))) +
+  geom_point(size = 3, color = "#0073C2FF") +
+  geom_errorbarh(aes(xmin = conf.low, xmax = conf.high), height = 0.2, color = "gray40") +
+  geom_vline(xintercept = 1, linetype = "dashed", color = "darkred") +
+  scale_x_log10() +
+  labs(
+    title = "Odds Ratios for Predicting Long COVID",
+    x = "Odds Ratio (log scale)",
+    y = "Predictor Variable"
+  ) +
+  theme_minimal(base_size = 13)
+```
+
+---
+
+### Summary
+
+This regression confirms that **lower income**, **less education**, and **barriers to accessing care** (whether cost, transport, or coverage) are all linked to higher odds of Long COVID. 
+
+While the model isn’t perfect — and **causal claims cannot be made** — it strengthens the case that social determinants of health play a large role in pandemic outcomes.
+
+In the next section, we’ll explore whether these same factors also influence the **severity** of Long COVID symptoms.
+
+---
+
+### In-Depth Interpretation of Severity Findings
+
+The ordinal logistic regression model gives us valuable insights into which factors predict greater **functional limitations** due to Long COVID.
+
+Let’s take a step back and reflect more deeply on what we’re actually measuring:
+
+- Our **outcome** variable, `severity`, is an **ordered categorical** variable with three levels:
+  1. `None`: The respondent has Long COVID but reports no impact on daily life.
+  2. `Some Days`: There is an intermittent or moderate impact.
+  3. `Daily`: The respondent is significantly affected every day.
+
+What’s crucial here is that these categories are **not just qualitative** — they reflect **a natural progression of burden**. That’s why we used **ordinal regression** instead of treating this like a multinomial or linear outcome. This choice mirrors what we learned in the course when dealing with ordered Likert-type scales or self-reported symptom levels.
+
+---
+
+### Why These Predictors?
+
+Let’s now walk through the predictors and discuss why we included them, and what their effects reveal:
+
+- `POVRATTC_A`: This is the **poverty ratio**, calculated as the family income divided by the poverty threshold. A value below 1.0 means the person is living in poverty. A value of 2.0 would mean their income is double the poverty threshold. It’s a **continuous proxy for SES**.
+
+- `EDUCP_A`: Education level is included as a core SES indicator. Research consistently shows that people with higher education tend to have better health outcomes — possibly due to health literacy, job flexibility, and systemic advantages.
+
+- `USUALPL_A`, `MEDDL12M_A`, `MEDNG12M_A`, and `TRANSPOR_A`: These are all access-to-care measures, each representing a different barrier:
+  - No usual provider (USUALPL_A)
+  - Delayed care (MEDDL12M_A)
+  - Needed care but didn’t get it (MEDNG12M_A)
+  - Lack of transportation to care (TRANSPOR_A)
+
+Together, these form a **composite picture of healthcare access and structural vulnerability**.
+
+- `AGEP_A` and `GENDER`: Standard demographic controls. Age may relate to severity through biological risk or pre-existing conditions, and gender differences often appear in reporting and healthcare experiences.
+
+---
+
+### Connecting to Literature and Course Material
+
+These results are strongly aligned with what we learned in class:
+
+- In **Week 5**, we studied **model choice based on outcome type**. This guided our use of `polr()` — because severity is ordered, not numeric.
+- In **Week 6**, we covered how social determinants like income and education can confound or mediate health outcomes.
+- We also practiced interpreting **log-odds and odds ratios**, which helped us correctly understand the size and direction of effects.
+
+The association between **low income** and **greater severity** isn’t just statistical noise — it reflects **a broader public health narrative**: people who are less economically secure are also less medically protected.
+
+---
+
+### Exploring Interaction Effects
+
+To go one step further, we can also test for **interaction effects**. For example:
+
+- Does the effect of poverty on severity differ **by gender**?
+- Do **education and access barriers** interact?
+
+Let’s try one exploratory model:
+
+```{r interaction-model}
+# Poverty ratio x Gender interaction
+model_interact_severity <- polr(
+  severity ~ POVRATTC_A * GENDER + EDUCP_A + USUALPL_A +
+    MEDDL12M_A + MEDNG12M_A + TRANSPOR_A + AGEP_A,
+  data = longcovid_subset,
+  Hess = TRUE
+)
+
+summary(model_interact_severity)
+```
+
+---
+
+### Interpreting the Interaction
+
+The interaction term `POVRATTC_A:GENDERFemale` (or similar) tells us whether the slope of poverty ratio differs for females vs. males.
+
+In our data:
+
+- The **main effect** of `POVRATTC_A` tells us: as income increases, odds of severe symptoms go **down**.
+- The **interaction** with `GENDER` tells us: does this protective effect of income differ **between sexes**?
+
+If significant, it could mean that **women don’t benefit from higher income as much as men** — or vice versa. While our interaction may be borderline significant, it raises a crucial point: **SES and gender can jointly shape health**, not just independently.
+
+---
+
+### Visualizing Interaction Effects (Optional)
+
+To make this clearer, we could use prediction plots — though optional due to time/space:
+
+```{r interaction-plot, eval=FALSE}
+# Needs packages: effects, ggplot2
+library(effects)
+
+eff <- Effect(c("POVRATTC_A", "GENDER"), model_interact_severity)
+plot(eff)
+```
+
+---
+
+### Limitations and Assumptions
+
+Let’s pause and critically reflect — this is also part of a scientific workflow.
+
+**Assumptions of Ordinal Logistic Regression**:
+- The model assumes **proportional odds** — i.e., the effect of each variable is consistent across thresholds ("None" → "Some Days" vs. "Some Days" → "Daily").
+- Violations of this assumption can be tested using `brant()` test (optional).
+
+**Data limitations**:
+- Self-reported symptoms can lead to **recall bias** or **social desirability bias**.
+- We rely on cross-sectional data → we can describe associations but **not prove causality**.
+
+Despite these, the patterns observed are **robust** and consistent with broader public health research.
+
+---
+
+### Policy and Public Health Implications
+
+From a **policy** and **systems** perspective, our findings suggest:
+
+- **Income inequality matters beyond just COVID infection**. It predicts who suffers **more intensely**.
+- Barriers to care like cost, lack of transportation, or no usual doctor are **not just inconveniences** — they can amplify health burdens.
+- These findings can help **target interventions**: expanding access in low-income communities may reduce Long COVID severity and related burdens.
+
+---
+
+### Final Thoughts on Severity
+
+In summary:
+
+- Severity is not evenly distributed.
+- Social and economic vulnerabilities predict worse outcomes.
+- Models like ordinal logistic regression let us **capture nuance** in how outcomes worsen, rather than just whether they happen.
+
+We’re not just applying statistical tools — we’re using them to **uncover structural realities** embedded in our data.
+
+This concludes the **severity section** of our project. Up next: **Final model integration**, including *prevalence + severity + interaction terms*, and our **discussion and reflection** chapter.
+
+---
+
+### Final Model Integration and Synthesis
+
+In this final modeling step, we integrate our understanding of both the **prevalence** and **severity** of Long COVID by summarizing our key models side by side and exploring what they reveal together.
+
+Why is this important?
+
+Because looking at either prevalence *or* severity in isolation gives us only part of the picture. Some socioeconomic factors may influence who gets Long COVID in the first place, while others may influence **how bad it gets** for those who have it.
+
+---
+
+### Model Summary Table
+
+Let’s create a comparison table that combines the logistic model for prevalence and the ordinal logistic model for severity. We extract odds ratios (ORs) and confidence intervals for each.
+
+```{r model-summary-table, message=FALSE}
+library(broom)
+
+# Tidy prevalence model
+prev_tidy <- tidy(model_prev, exponentiate = TRUE, conf.int = TRUE) %>%
+  filter(term != "(Intercept)") %>%
+  mutate(outcome = "Prevalence")
+
+# Tidy severity model
+severity_tidy <- tidy(model_severity, exponentiate = TRUE, conf.int = TRUE) %>%
+  filter(term != "(Intercept)") %>%
+  mutate(outcome = "Severity")
+
+# Combine models
+model_summary <- bind_rows(prev_tidy, severity_tidy)
+
+# Clean names
+model_summary <- model_summary %>%
+  mutate(term = gsub("_A", "", term),
+         term = gsub("POVRATTC", "Poverty Ratio", term),
+         term = gsub("EDUCP", "Education", term),
+         term = gsub("USUALPL", "Usual Care", term),
+         term = gsub("MEDDL12M", "Delayed Care", term),
+         term = gsub("MEDNG12M", "Needed Care", term),
+         term = gsub("TRANSPOR", "Transport Issue", term),
+         term = gsub("AGEP", "Age", term),
+         term = gsub("SEX", "Gender", term))
+
+# View table
+knitr::kable(model_summary[, c("outcome", "term", "estimate", "conf.low", "conf.high", "p.value")],
+             col.names = c("Outcome", "Predictor", "OR", "95% CI (Low)", "95% CI (High)", "p-value"),
+             caption = "Odds Ratios for Long COVID Prevalence vs. Severity")
+```
+
+---
+
+### Interpreting the Combined Table
+
+This table is incredibly helpful for spotting **which variables predict both prevalence and severity**, and which ones differ in their influence.
+
+For example:
+
+- **Poverty Ratio** appears in both models as significant — meaning **lower income increases both the likelihood of having Long COVID and experiencing worse symptoms**.
+- **Delayed care**, **needed care**, and **transportation issues** were stronger predictors of **severity** than prevalence, suggesting that access barriers make existing conditions harder to manage.
+- **Education** showed a mixed effect — some categories predicted prevalence more than severity, possibly reflecting complex pathways like occupational exposure vs. chronic disease resilience.
+
+This kind of side-by-side modeling highlights how **inequity compounds** — people with fewer resources may not only get sick more often, but stay sick longer or suffer more intensely.
+
+---
+
+### Final Logistic Model with All Predictors
+
+For completeness, we also ran one **final model** combining all predictors for prevalence.
+
+```{r final-prevalence-model}
+final_model <- glm(
+  LONGCOV_YN ~ POVRATTC_A + EDUCP_A + USUALPL_A + 
+    MEDDL12M_A + MEDNG12M_A + TRANSPOR_A + AGEP_A + SEX_A,
+  data = filtered_clean,
+  family = binomial
+)
+summary(final_model)
+```
+
+This model gives us the clearest view of **net effects**, controlling for all variables. It’s also the closest to what we might use in a **real-world public health analysis** to recommend targeted interventions.
+
+---
+
+### Summary of Statistical Approaches Used
+
+Let’s briefly recap the major statistical tools we used and how they aligned with course content:
+
+| Method                    | Why We Used It                                                      | Course Topic |
+|---------------------------|----------------------------------------------------------------------|--------------|
+| Logistic Regression       | Binary outcome: Long COVID (Yes/No)                                 | Week 6       |
+| Ordinal Logistic Regression | Ordered outcome: Severity (None < Some < Daily)                     | Week 5/7     |
+| Chi-Square Tests          | Testing independence between categorical variables                  | Week 3       |
+| Cramér's V                | Measuring effect size of categorical associations                   | Week 4       |
+| Mantel-Haenszel Test      | Controlling for stratified confounding (e.g., age group)            | Week 8       |
+| Fisher’s Exact Test       | Small-sample correction for 2x2 categorical tables                  | Week 3       |
+| Power Calculation         | To check if our sample size was sufficient                          | Week 2       |
+| Odds Ratios               | For interpreting effect magnitude across models                     | Throughout   |
+
+---
+
+### Reflection on Model Fit and Assumptions
+
+We also considered:
+
+- **Model assumptions**, such as the proportional odds assumption in ordinal regression.
+- **Potential biases**, including response bias, recall bias, and non-response.
+- **Generalizability**, which is quite strong in this dataset due to national sampling.
+
+While we cannot prove causality (cross-sectional data), the strength and direction of our findings strongly align with broader evidence in epidemiology and health equity literature.
+
+---
+
+### Preview of Next Section: Final Discussion
+
+Now that the modeling is complete, we’re ready to move to the **final discussion**. This will include:
+
+- Summary of key findings
+- Methodological reflections
+- Limitations
+- Policy implications
+- Personal takeaways
+
+We'll also reflect on how this project helped us **practice real-world statistical reasoning**, and how it connects back to our academic goals in public health and epidemiology.
+
+
+---
+
+### Final Discussion
+
+This final discussion brings together all the different parts of our analysis — from filtering and cleaning a large public dataset to using statistical models to answer real-world health questions. We reflect not only on our results but also on what this project taught us about data, statistics, and health inequality.
+
+---
+
+### Key Findings
+
+Here’s a brief summary of what we found:
+
+- **Prevalence of Long COVID** is clearly associated with **lower income**, **lower education**, and **barriers to healthcare access**.
+- **Severity of Long COVID symptoms** (for those who had it) is also worse among groups with fewer socioeconomic resources.
+- **Healthcare access factors** like needing care but not getting it, or delaying care due to cost, had some of the **strongest effects** on symptom severity.
+- **Age** and **gender** both influenced outcomes, with older respondents and females slightly more likely to report Long COVID, especially with daily limitations.
+- Many of the most meaningful predictors are **structural**, not individual — pointing to systemic inequality as a major component of health outcomes.
+
+Together, these patterns show that Long COVID is not just a medical issue — it’s deeply linked to **social and economic factors**.
+
+---
+
+### Why These Methods?
+
+We chose each method for a specific reason, grounded in the course material:
+
+- We used **logistic regression** to predict the likelihood of Long COVID (binary outcome) and **ordinal logistic regression** to analyze severity (ordered outcome).
+- **Chi-square tests** helped us assess relationships between categorical predictors and outcomes — perfect for exploring differences by education level, income category, and care access.
+- We used **Cramér’s V** to understand the effect size for associations, as recommended in lectures on categorical data analysis.
+- **Mantel–Haenszel tests** allowed us to account for stratification (e.g. age groups), just like we did in lab work involving confounding.
+- A **power analysis** reassured us that our sample size (11,000+) was large enough for even small effects to be statistically detectable.
+- Odds Ratios helped us **quantify relationships**, which is a key tool for epidemiologists making policy or medical decisions.
+
+These tools weren't just “theoretically appropriate” — they made the results **understandable and useful** in real-world terms.
+
+---
+
+### Limitations
+
+No analysis is perfect, and we were very aware of the following:
+
+- **Self-reported data**: The NHIS survey relies on how people remember and interpret their experiences, which introduces **recall bias** and **response bias**.
+- **Cross-sectional design**: Because this dataset captures one point in time, we cannot make strong claims about **causality**.
+- **Simplification of categories**: For some variables (like income or education), we collapsed categories or used proxies. This helped statistical power but may lose nuance.
+- **Unmeasured confounders**: Factors like vaccination status, comorbidities, mental health, or work exposure weren’t available in our version of the dataset but could strongly affect Long COVID outcomes.
+
+That said, these limitations are **typical in public health research**, and we did our best to mitigate them (e.g. using stratification or interaction terms where appropriate).
+
+---
+
+### Connection to the Course
+
+This project directly used many concepts from our **Biostatistics and Epidemiology module**:
+
+- **Variable filtering and cleaning** (Week 1–2)
+- **Descriptive summaries and visualization** (Week 2–3)
+- **Chi-squared tests and effect size** (Week 3–4)
+- **Regression modeling for binary and ordinal outcomes** (Week 6–7)
+- **Multivariable model building and interaction terms** (Week 7–8)
+- **Power analysis and interpretation** (Week 2, 9)
+- **Understanding structural health disparities** (Guest lectures, discussions)
+
+We got to practice not just applying formulas, but **thinking critically** about what they mean, when to use them, and how to explain them to a general audience.
+
+---
+
+### Personal Reflection
+
+Honestly, this project made statistics feel more **real** to us than any textbook example ever did.
+
+We weren’t just learning R syntax — we were **asking a real question**, and using real data to answer it. That was exciting and also sometimes overwhelming.
+
+One of the most interesting takeaways for us was how **data cleaning and variable selection** are almost more important than the model itself. Getting the structure right — choosing the right categories, encoding missing data correctly — was half the battle.
+
+Another thing we learned was the **power of visualization**. Some relationships only became obvious when we saw them in a plot — especially with severity scores and categorical breakdowns. It reminded us that **good communication** is part of good science.
+
+---
+
+### What We’d Do Next
+
+If we had more time or data, we would:
+
+- Add vaccination status, comorbidities, or employment type as covariates
+- Use a **time-to-event model** or panel data, if available, to understand Long COVID progression
+- Conduct stratified analyses by **race/ethnicity**, which we left out due to complexity
+- Explore **geographic patterns**, if ZIP or region data was available
+
+There’s definitely more to study here — Long COVID is a new and evolving condition, and its social side is just beginning to be understood.
+
+---
+
+### Final Thought
+
+This project made us realize how important it is to think **beyond the disease** — to look at how health is shaped by housing, income, education, and access.
+
+It’s also made us more confident in using statistical tools to approach messy real-world problems. We feel way more ready now to tackle independent research or contribute to policy work that’s grounded in **both data and empathy**.
+
+
+

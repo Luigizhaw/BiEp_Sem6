@@ -14,6 +14,67 @@ data <- read.csv("C:/Users/Luigi/OneDrive/ZHAW/6. Semester/BiEp_Sem6/adult23.csv
 
 # Preview the data
 str(data)
+head(data)
+colnames(data)
+
+# Load necessary libraries
+library(dplyr)
+library(tidyr)
+library(purrr)
+
+# Step 1: Basic dataset summary
+cat("Total rows in dataset:", nrow(data), "\n")
+
+# Step 2: Summary table for all variables
+summary_table <- data.frame(
+  Variable = names(data),
+  Type = sapply(data, function(x) class(x)[1]),
+  Unique_Values = sapply(data, function(x) length(unique(x))),
+  Missing_Count = sapply(data, function(x) sum(is.na(x)))
+)
+
+print("=== VARIABLE OVERVIEW ===")
+print(summary_table)
+
+# Step 3: Frequency tables for categorical or integer-labeled variables
+cat_vars <- names(data)[sapply(data, function(x) is.factor(x) || is.character(x) || is.integer(x))]
+cat("=== FREQUENCY TABLES FOR CATEGORICAL / INTEGER VARIABLES ===\n")
+for (var in cat_vars) {
+  cat("\n---", var, "---\n")
+  print(table(data[[var]], useNA = "ifany"))
+}
+
+# Step 4: Clean summary for numeric variables
+library(tidyr)
+library(dplyr)
+library(stringr)
+
+# Compute summary
+num_summary_raw <- data %>%
+  select(where(is.numeric)) %>%
+  summarise(across(everything(), list(
+    mean = ~mean(., na.rm = TRUE),
+    sd = ~sd(., na.rm = TRUE),
+    min = ~min(., na.rm = TRUE),
+    max = ~max(., na.rm = TRUE),
+    missing = ~sum(is.na(.))
+  ), .names = "{.fn}_{.col}"))
+
+# Pivot safely using regular expressions
+num_summary_clean <- num_summary_raw %>%
+  pivot_longer(cols = everything(), names_to = "name", values_to = "value") %>%
+  mutate(
+    Metric = str_extract(name, "^(mean|sd|min|max|missing)"),
+    Variable = str_remove(name, "^(mean|sd|min|max|missing)_")
+  ) %>%
+  select(Variable, Metric, value) %>%
+  pivot_wider(names_from = Metric, values_from = value)
+
+# Show output
+cat("\n=== CLEANED SUMMARY FOR NUMERIC VARIABLES ===\n")
+print(num_summary_clean, n = 25)  # Show 25 rows (increase if needed)
+
+
 
 
 ######## Chi-Squared Test ########
@@ -172,7 +233,173 @@ round(result_table, 3)
 library(knitr)
 kable(round(result_table, 3), caption = "Odds Ratios for Long COVID Presence")
 
+#######################3
+# Load required libraries
+library(dplyr)
+library(broom)
+library(ggplot2)
+library(forcats)
 
+# Ensure EDUCP_A exists in your dataset
+if (!"EDUCP_A" %in% colnames(filtered_data)) stop("EDUCP_A not found in filtered_data!")
+
+# --- Recode SES Variables inside mutate ---
+filtered_data <- filtered_data %>%
+  mutate(
+    collapsed_EDU = factor(case_when(
+      EDUCP_A %in% 1:3 ~ "Low",
+      EDUCP_A %in% 4:6 ~ "Medium",
+      EDUCP_A %in% 7:10 ~ "High",
+      TRUE ~ NA_character_
+    ), levels = c("Low", "Medium", "High")),
+    
+    collapsed_INC = factor(case_when(
+      INCWRKO_A %in% c(1, 2) ~ "Low",
+      INCWRKO_A %in% c(3, 4, 5) ~ "Medium",
+      INCWRKO_A %in% c(6, 7, 8) ~ "High",
+      TRUE ~ NA_character_
+    ), levels = c("Low", "Medium", "High")),
+    
+    collapsed_EMP = factor(case_when(
+      EMPWRKFT1_A == 1 ~ "Employed Full-Time",
+      EMPWRKFT1_A == 2 ~ "Employed Part-Time",
+      EMPWRKFT1_A == 3 ~ "Not Working",
+      TRUE ~ NA_character_
+    ), levels = c("Employed Full-Time", "Employed Part-Time", "Not Working"))
+  )
+
+# --- Fit logistic regression model ---
+model <- glm(LONGCOVD1_A ~ collapsed_EDU + collapsed_INC + collapsed_EMP +
+               HISTOPCOST_A + AGEP_A + SEX_A + DISAB3_A +
+               PHQ2SCREEN_A + GAD2SCREEN_A,
+             data = filtered_data, family = binomial)
+
+# --- Tidy model output ---
+model_tidy <- tidy(model, conf.int = TRUE, exponentiate = TRUE) %>%
+  filter(term != "(Intercept)") %>%
+  filter(!is.na(estimate), conf.low > 0, conf.high > 0) %>% # prevent log10 errors
+  mutate(
+    group = case_when(
+      grepl("collapsed_EDU", term) ~ "Education",
+      grepl("collapsed_INC", term) ~ "Income",
+      grepl("collapsed_EMP", term) ~ "Employment",
+      grepl("HISTOPCOST", term) ~ "Healthcare Cost Barrier",
+      grepl("AGEP", term) ~ "Age",
+      grepl("SEX", term) ~ "Sex",
+      grepl("DISAB3", term) ~ "Disability",
+      grepl("PHQ2SCREEN|GAD2SCREEN", term) ~ "Mental Health",
+      TRUE ~ "Other"
+    ),
+    term = gsub("collapsed_", "", term),
+    term = gsub("_A", "", term),
+    term = fct_rev(fct_inorder(term))
+  )
+
+# --- Plot Odds Ratios ---
+ggplot(model_tidy, aes(x = estimate, y = term, color = group)) +
+  geom_point(size = 2.5) +
+  geom_errorbarh(aes(xmin = conf.low, xmax = conf.high), height = 0.2) +
+  geom_vline(xintercept = 1, linetype = "dashed", color = "gray30") +
+  scale_x_log10() +
+  scale_color_brewer(palette = "Set1") +
+  labs(
+    title = "Adjusted Odds Ratios for Long COVID Prevalence",
+    subtitle = "95% Confidence Intervals (log scale)",
+    x = "Odds Ratio (log scale)",
+    y = "Predictor Variable",
+    color = "Variable Group"
+  ) +
+  theme_minimal(base_size = 14) +
+  theme(
+    legend.position = "bottom",
+    axis.text.y = element_text(size = 10)
+  )
+
+
+
+################################## 
+# Load required libraries
+library(dplyr)
+library(ggplot2)
+library(broom)
+library(forcats)
+
+# Step 1: Filter dataset and recode SES and outcome
+filtered_data <- data %>%
+  filter(AGEP_A >= 18 & AGEP_A <= 65) %>%
+  mutate(
+    collapsed_EDU = factor(case_when(
+      EDUCP_A %in% 1:3 ~ "Low",
+      EDUCP_A %in% 4:6 ~ "Medium",
+      EDUCP_A %in% 7:10 ~ "High",
+      TRUE ~ NA_character_
+    ), levels = c("Low", "Medium", "High")),
+    
+    collapsed_INC = factor(case_when(
+      INCWRKO_A == 1 ~ "LowIncome",
+      INCWRKO_A == 2 ~ "MidIncome",
+      INCWRKO_A == 8 ~ "HighIncome",
+      TRUE ~ NA_character_
+    )),
+    
+    LONGCOVD_clean = case_when(
+      LONGCOVD1_A == 1 ~ 1,
+      LONGCOVD1_A == 2 ~ 0,
+      TRUE ~ NA_real_
+    )
+  ) %>%
+  filter(!is.na(LONGCOVD_clean))
+
+# Step 2: Fit logistic regression model with interaction
+model_interact <- glm(
+  LONGCOVD_clean ~ collapsed_EDU * DISAB3_A + HISTOPCOST_A + SEX_A + AGEP_A,
+  data = filtered_data,
+  family = binomial
+)
+
+# Step 3: Tidy model output for visualization
+model_tidy <- tidy(model_interact, conf.int = TRUE, exponentiate = TRUE) %>%
+  filter(term != "(Intercept)") %>%
+  filter(!is.na(conf.low) & !is.na(conf.high)) %>%
+  mutate(
+    group = case_when(
+      grepl("collapsed_EDU", term) ~ "Education",
+      grepl("DISAB3", term) ~ "Disability",
+      grepl("HISTOPCOST", term) ~ "Healthcare Cost",
+      grepl("SEX", term) ~ "Sex",
+      grepl("AGEP", term) ~ "Age",
+      TRUE ~ "Other"
+    ),
+    term = fct_reorder(term, estimate)
+  )
+
+# Step 4: Plot Odds Ratios with 95% CIs
+ggplot(model_tidy, aes(x = estimate, y = fct_rev(term), color = group)) +
+  geom_point(size = 2.5) +
+  geom_errorbarh(aes(xmin = conf.low, xmax = conf.high), height = 0.25) +
+  geom_vline(xintercept = 1, linetype = "dashed", color = "gray30") +
+  scale_x_log10() +
+  scale_color_brewer(palette = "Dark2") +
+  labs(
+    title = "Adjusted Odds Ratios for Long COVID (Interaction Model)",
+    subtitle = "Interaction: Education × Disability | Adults 18–65",
+    x = "Odds Ratio (log scale)",
+    y = "Predictor Variable",
+    color = "Variable Group"
+  ) +
+  theme_minimal(base_size = 14) +
+  theme(
+    legend.position = "bottom",
+    axis.text.y = element_text(size = 10),
+    panel.grid.minor = element_blank(),
+    panel.grid.major.y = element_blank()
+  )
+
+
+
+
+alias(model_interact)$Complete
+table(data$EDUCP_A)
 
 
 ######## Effect Size for ANOVA-lika Analysis ########
@@ -518,27 +745,121 @@ summary(model_severity)
 
 
 
-
-
-# Load required libraries
+#################################
 library(ggplot2)
 library(broom)
 library(dplyr)
 library(forcats)
 
-# Tidy the model
+# Tidy the model with CIs and exponentiated odds ratios
+model_tidy <- broom::tidy(model_full, conf.int = TRUE, exponentiate = TRUE) %>%
+  filter(term != "(Intercept)")
+
+# Manually define predictor groups for display
+model_tidy <- model_tidy %>%
+  mutate(group = case_when(
+    grepl("EDUCP", term) ~ "Education Level",
+    grepl("INCWRKO", term) ~ "Income Level",
+    grepl("HISTOPCOST", term) ~ "Healthcare Access",
+    grepl("AGEP", term) ~ "Age",
+    grepl("SEX", term) ~ "Sex",
+    grepl("RACE", term) ~ "Race/Ethnicity",
+    grepl("URBRRL", term) ~ "Urban/Rural",
+    grepl("DISAB", term) ~ "Disability",
+    grepl("PHQ2", term) ~ "Depression",
+    grepl("GAD2", term) ~ "Anxiety",
+    grepl("EMPWRKFT", term) ~ "Employment",
+    grepl("EMDINDSTN", term) ~ "Industry",
+    grepl("EMDOCCUPN", term) ~ "Occupation",
+    TRUE ~ "Other"
+  ))
+
+# Set order manually within groups
+model_tidy <- model_tidy %>%
+  mutate(term = fct_inorder(term))  # Keeps original order, no sorting by OR
+
+# Plot grouped forest plot
+ggplot(model_tidy, aes(x = estimate, y = term)) +
+  geom_point(size = 3) +
+  geom_errorbarh(aes(xmin = conf.low, xmax = conf.high), height = 0.2, linewidth = 1) +
+  geom_vline(xintercept = 1, linetype = "dashed", color = "red") +
+  scale_x_log10() +
+  facet_grid(group ~ ., scales = "free_y", space = "free", switch = "y") +
+  labs(title = "Grouped Odds Ratios (95% CI) for Long COVID",
+       x = "Odds Ratio (log scale)", y = NULL,
+       caption = "Red line = No effect (OR = 1)") +
+  theme_minimal(base_size = 14) +
+  theme(strip.text.y = element_text(angle = 0, hjust = 0, face = "bold"),
+        axis.text.y = element_text(size = 11),
+        panel.grid.major.y = element_blank(),
+        plot.title = element_text(face = "bold"))
+###############################
+library(ggplot2)
+library(broom)
+library(dplyr)
+library(forcats)
+library(scales)
+library(grid)  # for unit()
+
+# Clean and prepare
 model_tidy <- broom::tidy(model_full, conf.int = TRUE, exponentiate = TRUE) %>%
   filter(term != "(Intercept)") %>%
-  mutate(term = fct_reorder(term, estimate))  # Sort for better visualization
+  filter(!term %in% c("EDUCP_A9", "EDUCP_A10")) %>%
+  mutate(
+    group = case_when(
+      grepl("EDUCP", term) ~ "Education Level",
+      grepl("INCWRKO", term) ~ "Income Level",
+      grepl("HISTOPCOST", term) ~ "Healthcare Access",
+      grepl("AGEP", term) ~ "Age",
+      grepl("SEX", term) ~ "Sex",
+      grepl("RACE", term) ~ "Race/Ethnicity",
+      grepl("URBRRL", term) ~ "Urbanicity",
+      grepl("DISAB", term) ~ "Disability",
+      grepl("PHQ2", term) ~ "Depression Screening",
+      grepl("GAD2", term) ~ "Anxiety Screening",
+      grepl("EMPWRKFT", term) ~ "Work Status",
+      grepl("EMDINDSTN", term) ~ "Industry",
+      grepl("EMDOCCUPN", term) ~ "Occupation",
+      TRUE ~ "Other"
+    ),
+    label = case_when(
+      term == "AGEP_A" ~ "Age",
+      term == "SEX_A2" ~ "Female",
+      term == "DISAB3_A" ~ "Disabled",
+      term == "PHQ2SCREEN_A" ~ "PHQ-2 Positive",
+      term == "GAD2SCREEN_A" ~ "GAD-2 Positive",
+      term == "HISTOPCOST_AYes" ~ "Delayed Care (Cost)",
+      term == "EMPWRKFT1_A" ~ "Working Full-Time",
+      TRUE ~ term
+    ),
+    term = fct_inorder(label)
+  ) %>%
+  filter(conf.high < 50)
 
 # Plot
 ggplot(model_tidy, aes(x = estimate, y = term)) +
-  geom_point() +
-  geom_errorbarh(aes(xmin = conf.low, xmax = conf.high), height = 0.2) +
+  geom_point(size = 3) +
+  geom_errorbarh(aes(xmin = conf.low, xmax = conf.high), height = 0.25, linewidth = 1) +
   geom_vline(xintercept = 1, linetype = "dashed", color = "red") +
-  scale_x_log10() +  # Odds ratios are better on log scale
-  labs(title = "Odds Ratios with 95% Confidence Intervals",
-       x = "Odds Ratio (log scale)", y = "Predictor") +
-  theme_minimal(base_size = 14)
+  scale_x_log10(breaks = c(0.1, 0.5, 1, 2, 5, 10, 20), labels = label_log()) +
+  facet_grid(group ~ ., scales = "free_y", space = "free", switch = "y") +
+  labs(
+    title = "Adjusted Odds Ratios for Long COVID by Predictors",
+    subtitle = "With 95% Confidence Intervals (log scale)",
+    x = "Odds Ratio (log10 scale)",
+    y = NULL,
+    caption = "Red line = No effect (OR = 1)"
+  ) +
+  theme_minimal(base_size = 14) +
+  theme(
+    strip.text.y = element_text(angle = 0, hjust = 0, face = "bold"),
+    axis.text.y = element_text(size = 11, lineheight = 1.4),  # <- vertical spacing
+    panel.grid.major.y = element_blank(),
+    plot.title = element_text(face = "bold"),
+    plot.subtitle = element_text(margin = margin(b = 10)),
+    plot.caption = element_text(margin = margin(t = 10)),
+    panel.spacing = unit(1, "lines")  # <- spacing between facet groups
+  )
 
+############################
 

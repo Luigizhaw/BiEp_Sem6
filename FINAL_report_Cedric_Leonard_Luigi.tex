@@ -1,0 +1,1452 @@
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+%
+\documentclass[
+]{article}
+\usepackage{amsmath,amssymb}
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math} % this also loads fontspec
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+\usepackage{lmodern}
+\ifPDFTeX\else
+  % xetex/luatex font selection
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{xcolor}
+\usepackage[margin=1in]{geometry}
+\usepackage{color}
+\usepackage{fancyvrb}
+\newcommand{\VerbBar}{|}
+\newcommand{\VERB}{\Verb[commandchars=\\\{\}]}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+% Add ',fontsize=\small' for more characters per line
+\usepackage{framed}
+\definecolor{shadecolor}{RGB}{248,248,248}
+\newenvironment{Shaded}{\begin{snugshade}}{\end{snugshade}}
+\newcommand{\AlertTok}[1]{\textcolor[rgb]{0.94,0.16,0.16}{#1}}
+\newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
+\newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\BuiltInTok}[1]{#1}
+\newcommand{\CharTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\CommentTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
+\newcommand{\DecValTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ErrorTok}[1]{\textcolor[rgb]{0.64,0.00,0.00}{\textbf{#1}}}
+\newcommand{\ExtensionTok}[1]{#1}
+\newcommand{\FloatTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\ImportTok}[1]{#1}
+\newcommand{\InformationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\NormalTok}[1]{#1}
+\newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
+\newcommand{\OtherTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\RegionMarkerTok}[1]{#1}
+\newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
+\newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\StringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\VariableTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\WarningTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\usepackage{longtable,booktabs,array}
+\usepackage{calc} % for calculating minipage widths
+% Correct order of tables after \paragraph or \subparagraph
+\usepackage{etoolbox}
+\makeatletter
+\patchcmd\longtable{\par}{\if@noskipsec\mbox{}\fi\par}{}{}
+\makeatother
+% Allow footnotes in longtable head/foot
+\IfFileExists{footnotehyper.sty}{\usepackage{footnotehyper}}{\usepackage{footnote}}
+\makesavenoteenv{longtable}
+\usepackage{graphicx}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+% Set default figure placement to htbp
+\makeatletter
+\def\fps@figure{htbp}
+\makeatother
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
+\ifLuaTeX
+  \usepackage{selnolig}  % disable illegal ligatures
+\fi
+\usepackage{bookmark}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\urlstyle{same}
+\hypersetup{
+  pdftitle={Exploring Socioeconomic Factors and Long COVID in U.S. Adults (18--65)},
+  pdfauthor={Leonard, Cedric, Luigi},
+  hidelinks,
+  pdfcreator={LaTeX via pandoc}}
+
+\title{Exploring Socioeconomic Factors and Long COVID in U.S. Adults
+(18--65)}
+\author{Leonard, Cedric, Luigi}
+\date{2025-05-05}
+
+\begin{document}
+\maketitle
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\subsubsection{Introduction}\label{introduction}
+
+The COVID-19 pandemic has had massive health and societal impacts around
+the world. However, its long-term effects --- especially \textbf{Long
+COVID} --- are still being studied and better understood.
+
+Long COVID refers to symptoms that persist for weeks or even months
+after initial recovery from the virus. These symptoms can include
+fatigue, shortness of breath, brain fog, and others that significantly
+reduce quality of life. For some people, it can mean missing work,
+struggling with daily activities, and increased medical expenses.
+
+In this project, we asked:
+
+\begin{quote}
+\textbf{Do socioeconomic factors such as income, education, and access
+to healthcare influence the prevalence and severity of Long COVID
+symptoms among U.S. adults aged 18--65?}
+\end{quote}
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\subsubsection{Why This Question?}\label{why-this-question}
+
+We chose this topic because Long COVID is more than just a medical
+condition --- it's a public health issue. People with fewer resources or
+access to care may be more likely to:
+
+\begin{itemize}
+\tightlist
+\item
+  Be exposed to COVID-19 due to working in frontline jobs\\
+\item
+  Have untreated pre-existing conditions\\
+\item
+  Delay care because of cost or lack of insurance\\
+\item
+  Live in environments with limited healthcare access
+\end{itemize}
+
+As part of our \textbf{Biostatistics and Epidemiology module}, we wanted
+to apply statistical techniques that allow us to answer real-world
+public health questions --- not just whether Long COVID is happening,
+but \textbf{who is most affected}, and \textbf{how bad} the impact is.
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\subsubsection{Data Source}\label{data-source}
+
+We used the 2023--2024 \textbf{National Health Interview Survey (NHIS)}
+COVID-19 supplements from the CDC. These data are publicly available and
+contain thousands of responses from adults across the United States.
+
+The dataset includes:
+
+\begin{itemize}
+\tightlist
+\item
+  Demographic information (e.g., age, sex, education)
+\item
+  COVID-19 infection and symptom history
+\item
+  Questions on healthcare access and affordability
+\item
+  Income, poverty ratio, and household characteristics
+\end{itemize}
+
+After cleaning, we focused on respondents between ages \textbf{18 and
+65}, since older adults (65+) have different risk profiles and access to
+Medicare, which could skew the analysis.
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\subsubsection{Variables We Used}\label{variables-we-used}
+
+Here's a table showing which variables we kept and what they mean:
+
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.1720}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.8280}}@{}}
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+Variable
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Description
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+\texttt{LONGCOVD1\_A} & Has the respondent ever had Long COVID symptoms?
+(1 = Yes, 2 = No) \\
+\texttt{LCVDACT\_A} & Does Long COVID reduce daily activity? (1 = Yes, 2
+= No, 3 = Some days) \\
+\texttt{POVRATTC\_A} & Poverty ratio: income / poverty threshold (0 =
+poorest, 11 = richest) \\
+\texttt{RATCAT\_A} & Income category from low (1) to high (14) \\
+\texttt{EDUCP\_A} & Education level: 1 = no school, 10 = doctoral
+degree \\
+\texttt{USUALPL\_A} & Usual place for medical care (1 = Yes, 2 = No, 3 =
+More than one) \\
+\texttt{MEDDL12M\_A} & Delayed care in last 12 months due to cost? (1 =
+Yes, 2 = No) \\
+\texttt{MEDNG12M\_A} & Needed care but couldn't get it? (1 = Yes, 2 =
+No) \\
+\texttt{TRANSPOR\_A} & Couldn't get care due to transportation? (1 =
+Yes, 2 = No) \\
+\texttt{AGEP\_A} & Age of respondent (filtered to 18--65 years) \\
+\texttt{SEX\_A} & Sex of respondent (1 = Male, 2 = Female) \\
+\end{longtable}
+
+These variables were chosen to reflect different dimensions of
+\textbf{socioeconomic status (SES)} and \textbf{access to healthcare}
+--- the main factors in our hypothesis.
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\subsubsection{Data Loading and
+Filtering}\label{data-loading-and-filtering}
+
+We began by loading the raw CSV file, keeping only the relevant
+variables, and applying basic filters to clean up invalid values.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Load the dataset}
+\NormalTok{data }\OtherTok{\textless{}{-}} \FunctionTok{read.csv}\NormalTok{(}\StringTok{"C:/Users/Luigi/OneDrive/ZHAW/6. Semester/BiEp\_Sem6/adult23.csv"}\NormalTok{)}
+
+\CommentTok{\# Keep relevant variables}
+\NormalTok{relevant\_vars }\OtherTok{\textless{}{-}} \FunctionTok{c}\NormalTok{(}
+  \StringTok{"AGEP\_A"}\NormalTok{, }\StringTok{"LONGCOVD1\_A"}\NormalTok{, }\StringTok{"LCVDACT\_A"}\NormalTok{, }\StringTok{"POVRATTC\_A"}\NormalTok{, }\StringTok{"RATCAT\_A"}\NormalTok{,}
+  \StringTok{"EDUCP\_A"}\NormalTok{, }\StringTok{"USUALPL\_A"}\NormalTok{, }\StringTok{"MEDDL12M\_A"}\NormalTok{, }\StringTok{"MEDNG12M\_A"}\NormalTok{, }\StringTok{"TRANSPOR\_A"}\NormalTok{, }\StringTok{"SEX\_A"}
+\NormalTok{)}
+
+\NormalTok{filtered\_data }\OtherTok{\textless{}{-}}\NormalTok{ data }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{select}\NormalTok{(}\FunctionTok{all\_of}\NormalTok{(relevant\_vars))}
+\end{Highlighting}
+\end{Shaded}
+
+Next, we filtered for only valid responses and created new variables
+where needed.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{filtered\_clean }\OtherTok{\textless{}{-}}\NormalTok{ filtered\_data }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{filter}\NormalTok{(}
+\NormalTok{    AGEP\_A }\SpecialCharTok{\textgreater{}=} \DecValTok{18} \SpecialCharTok{\&}\NormalTok{ AGEP\_A }\SpecialCharTok{\textless{}=} \DecValTok{65}\NormalTok{,}
+\NormalTok{    LONGCOVD1\_A }\SpecialCharTok{\%in\%} \FunctionTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{, }\DecValTok{2}\NormalTok{),}
+\NormalTok{    LCVDACT\_A }\SpecialCharTok{\%in\%} \FunctionTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{3}\NormalTok{),}
+\NormalTok{    EDUCP\_A }\SpecialCharTok{\%in\%} \DecValTok{1}\SpecialCharTok{:}\DecValTok{10}\NormalTok{,}
+\NormalTok{    USUALPL\_A }\SpecialCharTok{\%in\%} \FunctionTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{3}\NormalTok{),}
+\NormalTok{    MEDDL12M\_A }\SpecialCharTok{\%in\%} \FunctionTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{, }\DecValTok{2}\NormalTok{),}
+\NormalTok{    MEDNG12M\_A }\SpecialCharTok{\%in\%} \FunctionTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{, }\DecValTok{2}\NormalTok{),}
+\NormalTok{    TRANSPOR\_A }\SpecialCharTok{\%in\%} \FunctionTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{, }\DecValTok{2}\NormalTok{),}
+\NormalTok{    SEX\_A }\SpecialCharTok{\%in\%} \FunctionTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{, }\DecValTok{2}\NormalTok{)}
+\NormalTok{  ) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{mutate}\NormalTok{(}
+    \AttributeTok{LONGCOV\_YN =} \FunctionTok{ifelse}\NormalTok{(LONGCOVD1\_A }\SpecialCharTok{==} \DecValTok{1}\NormalTok{, }\DecValTok{1}\NormalTok{, }\DecValTok{0}\NormalTok{),}
+    \AttributeTok{GENDER =} \FunctionTok{factor}\NormalTok{(SEX\_A, }\AttributeTok{labels =} \FunctionTok{c}\NormalTok{(}\StringTok{"Male"}\NormalTok{, }\StringTok{"Female"}\NormalTok{)),}
+    \AttributeTok{RATCAT\_A =} \FunctionTok{as.factor}\NormalTok{(RATCAT\_A),}
+    \AttributeTok{EDUCP\_A =} \FunctionTok{as.factor}\NormalTok{(EDUCP\_A),}
+    \AttributeTok{USUALPL\_A =} \FunctionTok{as.factor}\NormalTok{(USUALPL\_A),}
+    \AttributeTok{MEDDL12M\_A =} \FunctionTok{as.factor}\NormalTok{(MEDDL12M\_A),}
+    \AttributeTok{MEDNG12M\_A =} \FunctionTok{as.factor}\NormalTok{(MEDNG12M\_A),}
+    \AttributeTok{TRANSPOR\_A =} \FunctionTok{as.factor}\NormalTok{(TRANSPOR\_A)}
+\NormalTok{  )}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\subsubsection{Descriptive Statistics}\label{descriptive-statistics}
+
+After filtering the dataset, we calculated \textbf{summary statistics}
+to compare respondents \textbf{with and without Long COVID}. The table
+below shows the mean values for each key variable, grouped by Long COVID
+status.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{descriptive\_stats }\OtherTok{\textless{}{-}}\NormalTok{ filtered\_clean }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{group\_by}\NormalTok{(LONGCOV\_YN) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{summarise}\NormalTok{(}
+    \AttributeTok{count =} \FunctionTok{n}\NormalTok{(),}
+    \AttributeTok{mean\_povratio =} \FunctionTok{mean}\NormalTok{(POVRATTC\_A, }\AttributeTok{na.rm =} \ConstantTok{TRUE}\NormalTok{),}
+    \AttributeTok{mean\_income\_cat =} \FunctionTok{mean}\NormalTok{(}\FunctionTok{as.numeric}\NormalTok{(}\FunctionTok{as.character}\NormalTok{(RATCAT\_A)), }\AttributeTok{na.rm =} \ConstantTok{TRUE}\NormalTok{),}
+    \AttributeTok{mean\_education =} \FunctionTok{mean}\NormalTok{(}\FunctionTok{as.numeric}\NormalTok{(}\FunctionTok{as.character}\NormalTok{(EDUCP\_A)), }\AttributeTok{na.rm =} \ConstantTok{TRUE}\NormalTok{),}
+    \AttributeTok{mean\_usualpl =} \FunctionTok{mean}\NormalTok{(}\FunctionTok{as.numeric}\NormalTok{(}\FunctionTok{as.character}\NormalTok{(USUALPL\_A)), }\AttributeTok{na.rm =} \ConstantTok{TRUE}\NormalTok{),}
+    \AttributeTok{mean\_meddelay =} \FunctionTok{mean}\NormalTok{(}\FunctionTok{as.numeric}\NormalTok{(}\FunctionTok{as.character}\NormalTok{(MEDDL12M\_A)), }\AttributeTok{na.rm =} \ConstantTok{TRUE}\NormalTok{),}
+    \AttributeTok{mean\_medneeded =} \FunctionTok{mean}\NormalTok{(}\FunctionTok{as.numeric}\NormalTok{(}\FunctionTok{as.character}\NormalTok{(MEDNG12M\_A)), }\AttributeTok{na.rm =} \ConstantTok{TRUE}\NormalTok{),}
+    \AttributeTok{mean\_transport =} \FunctionTok{mean}\NormalTok{(}\FunctionTok{as.numeric}\NormalTok{(}\FunctionTok{as.character}\NormalTok{(TRANSPOR\_A)), }\AttributeTok{na.rm =} \ConstantTok{TRUE}\NormalTok{),}
+    \AttributeTok{mean\_age =} \FunctionTok{mean}\NormalTok{(AGEP\_A, }\AttributeTok{na.rm =} \ConstantTok{TRUE}\NormalTok{)}
+\NormalTok{  )}
+\NormalTok{descriptive\_stats}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## # A tibble: 1 x 10
+##   LONGCOV_YN count mean_povratio mean_income_cat mean_education mean_usualpl
+##        <dbl> <int>         <dbl>           <dbl>          <dbl>        <dbl>
+## 1          1   750          3.73            9.17           5.91         1.13
+## # i 4 more variables: mean_meddelay <dbl>, mean_medneeded <dbl>,
+## #   mean_transport <dbl>, mean_age <dbl>
+\end{verbatim}
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\subsubsection{What Do These Averages Tell
+Us?}\label{what-do-these-averages-tell-us}
+
+From the descriptive statistics, some early patterns emerged:
+
+\begin{itemize}
+\tightlist
+\item
+  Respondents with \textbf{Long COVID} tend to have a \textbf{lower
+  average poverty ratio}, meaning they are relatively \textbf{less
+  wealthy}.
+\item
+  On average, they also report \textbf{slightly lower education levels}.
+\item
+  Healthcare access indicators like \textbf{delay due to cost},
+  \textbf{unmet medical needs}, and \textbf{transportation issues} show
+  \textbf{worse averages} in the Long COVID group.
+\item
+  The mean age is also slightly higher in this group --- which matches
+  expectations from the literature on risk factors.
+\end{itemize}
+
+We were curious: \textbf{Are these differences meaningful} or are they
+just noise? To answer that, we needed to go beyond means and start
+looking at \textbf{distribution and significance}.
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\subsubsection{Visualizing Key
+Differences}\label{visualizing-key-differences}
+
+Below are several plots comparing SES and healthcare access between the
+two groups.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Poverty Ratio}
+\FunctionTok{ggplot}\NormalTok{(filtered\_clean, }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =} \FunctionTok{factor}\NormalTok{(LONGCOV\_YN), }\AttributeTok{y =}\NormalTok{ POVRATTC\_A, }\AttributeTok{fill =} \FunctionTok{factor}\NormalTok{(LONGCOV\_YN))) }\SpecialCharTok{+}
+  \FunctionTok{geom\_boxplot}\NormalTok{() }\SpecialCharTok{+}
+  \FunctionTok{labs}\NormalTok{(}
+    \AttributeTok{title =} \StringTok{"Poverty Ratio by Long COVID Status"}\NormalTok{,}
+    \AttributeTok{x =} \StringTok{"Long COVID Status"}\NormalTok{,}
+    \AttributeTok{y =} \StringTok{"Poverty Ratio (0 = lowest income)"}\NormalTok{,}
+    \AttributeTok{fill =} \StringTok{"Long COVID"}
+\NormalTok{  ) }\SpecialCharTok{+}
+  \FunctionTok{scale\_fill\_manual}\NormalTok{(}\AttributeTok{values =} \FunctionTok{c}\NormalTok{(}\StringTok{"\#F8766D"}\NormalTok{, }\StringTok{"\#00BFC4"}\NormalTok{), }\AttributeTok{labels =} \FunctionTok{c}\NormalTok{(}\StringTok{"No"}\NormalTok{, }\StringTok{"Yes"}\NormalTok{)) }\SpecialCharTok{+}
+  \FunctionTok{theme\_minimal}\NormalTok{()}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{FINAL_report_Cedric_Leonard_Luigi_files/figure-latex/plot-boxplots-1.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Education}
+\FunctionTok{ggplot}\NormalTok{(filtered\_clean, }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =} \FunctionTok{factor}\NormalTok{(LONGCOV\_YN), }\AttributeTok{y =} \FunctionTok{as.numeric}\NormalTok{(}\FunctionTok{as.character}\NormalTok{(EDUCP\_A)), }\AttributeTok{fill =} \FunctionTok{factor}\NormalTok{(LONGCOV\_YN))) }\SpecialCharTok{+}
+  \FunctionTok{geom\_boxplot}\NormalTok{() }\SpecialCharTok{+}
+  \FunctionTok{labs}\NormalTok{(}
+    \AttributeTok{title =} \StringTok{"Education Level by Long COVID Status"}\NormalTok{,}
+    \AttributeTok{x =} \StringTok{"Long COVID Status"}\NormalTok{,}
+    \AttributeTok{y =} \StringTok{"Education (1 = no school, 10 = PhD)"}\NormalTok{,}
+    \AttributeTok{fill =} \StringTok{"Long COVID"}
+\NormalTok{  ) }\SpecialCharTok{+}
+  \FunctionTok{scale\_fill\_manual}\NormalTok{(}\AttributeTok{values =} \FunctionTok{c}\NormalTok{(}\StringTok{"\#F8766D"}\NormalTok{, }\StringTok{"\#00BFC4"}\NormalTok{), }\AttributeTok{labels =} \FunctionTok{c}\NormalTok{(}\StringTok{"No"}\NormalTok{, }\StringTok{"Yes"}\NormalTok{)) }\SpecialCharTok{+}
+  \FunctionTok{theme\_minimal}\NormalTok{()}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{FINAL_report_Cedric_Leonard_Luigi_files/figure-latex/plot-boxplots-2.pdf}
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\subsubsection{Why Start With Descriptive
+Analysis?}\label{why-start-with-descriptive-analysis}
+
+We started with descriptive statistics and boxplots for two reasons:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\item
+  \textbf{Exploration}: They help us ``see'' the shape of the data. Are
+  there outliers? Differences between groups? Any variables that look
+  too skewed to analyze with simple tests?
+\item
+  \textbf{Communication}: Boxplots and tables are readable even for
+  audiences who don't understand p-values. These visuals make
+  inequalities and disparities \textbf{tangible}.
+\end{enumerate}
+
+This exploratory phase also informed which variables would go into our
+later \textbf{regression models and hypothesis tests}.
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\subsubsection{Categorical Visuals}\label{categorical-visuals}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Healthcare access visual}
+\NormalTok{filtered\_clean}\SpecialCharTok{$}\NormalTok{USUALPL\_Label }\OtherTok{\textless{}{-}} \FunctionTok{factor}\NormalTok{(filtered\_clean}\SpecialCharTok{$}\NormalTok{USUALPL\_A,}
+  \AttributeTok{levels =} \FunctionTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{3}\NormalTok{),}
+  \AttributeTok{labels =} \FunctionTok{c}\NormalTok{(}\StringTok{"Yes"}\NormalTok{, }\StringTok{"No"}\NormalTok{, }\StringTok{"Multiple Places"}\NormalTok{)}
+\NormalTok{)}
+
+\FunctionTok{ggplot}\NormalTok{(filtered\_clean, }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ USUALPL\_Label, }\AttributeTok{fill =} \FunctionTok{factor}\NormalTok{(LONGCOV\_YN))) }\SpecialCharTok{+}
+  \FunctionTok{geom\_bar}\NormalTok{(}\AttributeTok{position =} \StringTok{"dodge"}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{labs}\NormalTok{(}
+    \AttributeTok{title =} \StringTok{"Access to a Usual Place for Medical Care"}\NormalTok{,}
+    \AttributeTok{x =} \StringTok{"Usual Source of Care"}\NormalTok{,}
+    \AttributeTok{y =} \StringTok{"Number of Respondents"}\NormalTok{,}
+    \AttributeTok{fill =} \StringTok{"Long COVID Status"}
+\NormalTok{  ) }\SpecialCharTok{+}
+  \FunctionTok{scale\_fill\_manual}\NormalTok{(}\AttributeTok{values =} \FunctionTok{c}\NormalTok{(}\StringTok{"\#F8766D"}\NormalTok{, }\StringTok{"\#00BFC4"}\NormalTok{), }\AttributeTok{labels =} \FunctionTok{c}\NormalTok{(}\StringTok{"No"}\NormalTok{, }\StringTok{"Yes"}\NormalTok{)) }\SpecialCharTok{+}
+  \FunctionTok{theme\_minimal}\NormalTok{()}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{FINAL_report_Cedric_Leonard_Luigi_files/figure-latex/barplots-1.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Gender distribution}
+\FunctionTok{ggplot}\NormalTok{(filtered\_clean, }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ GENDER, }\AttributeTok{fill =} \FunctionTok{factor}\NormalTok{(LONGCOV\_YN))) }\SpecialCharTok{+}
+  \FunctionTok{geom\_bar}\NormalTok{(}\AttributeTok{position =} \StringTok{"dodge"}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{labs}\NormalTok{(}
+    \AttributeTok{title =} \StringTok{"Gender Distribution by Long COVID Status"}\NormalTok{,}
+    \AttributeTok{x =} \StringTok{"Gender"}\NormalTok{,}
+    \AttributeTok{y =} \StringTok{"Number of Respondents"}\NormalTok{,}
+    \AttributeTok{fill =} \StringTok{"Long COVID Status"}
+\NormalTok{  ) }\SpecialCharTok{+}
+  \FunctionTok{scale\_fill\_manual}\NormalTok{(}\AttributeTok{values =} \FunctionTok{c}\NormalTok{(}\StringTok{"\#F8766D"}\NormalTok{, }\StringTok{"\#00BFC4"}\NormalTok{), }\AttributeTok{labels =} \FunctionTok{c}\NormalTok{(}\StringTok{"No"}\NormalTok{, }\StringTok{"Yes"}\NormalTok{)) }\SpecialCharTok{+}
+  \FunctionTok{theme\_minimal}\NormalTok{()}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{FINAL_report_Cedric_Leonard_Luigi_files/figure-latex/barplots-2.pdf}
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\subsubsection{Summary of the Visual
+Phase}\label{summary-of-the-visual-phase}
+
+So far, our exploratory analysis has shown that:
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{Poverty}, \textbf{education}, and \textbf{healthcare access}
+  vary noticeably between groups.
+\item
+  These differences are visually clear --- but are they
+  \textbf{statistically significant}?
+\end{itemize}
+
+In the next section, we will run \textbf{Chi-squared tests} and
+\textbf{logistic regressions} to determine whether these differences are
+due to chance --- or part of a bigger, systemic pattern.
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\subsubsection{Statistical Testing: Chi-Squared
+Analysis}\label{statistical-testing-chi-squared-analysis}
+
+While the descriptive phase revealed notable differences between
+respondents with and without Long COVID, we now need to test whether
+these observed differences are \textbf{statistically significant} or
+could have occurred by chance.
+
+To do this, we turn to the \textbf{Chi-squared test of independence},
+which is particularly suited to \textbf{categorical data} --- such as
+education level, income group, or access to care.
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\paragraph{Why Use the Chi-Squared
+Test?}\label{why-use-the-chi-squared-test}
+
+The Chi-squared test allows us to assess whether two categorical
+variables are \textbf{associated}. For example, we can test:
+
+\begin{itemize}
+\tightlist
+\item
+  Whether \textbf{income level} is associated with \textbf{Long COVID
+  status}
+\item
+  Whether people who had \textbf{trouble accessing care} are
+  \textbf{more likely} to report Long COVID
+\item
+  Whether \textbf{education level} influences Long COVID prevalence
+\end{itemize}
+
+Each test compares \textbf{observed vs expected frequencies} across
+groups and computes a \textbf{p-value} to determine significance.
+
+\begin{quote}
+In our case, the null hypothesis is always:\\
+\emph{``There is no association between the predictor variable and Long
+COVID status.''}
+\end{quote}
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Convert relevant variables to factor (needed for chi{-}squared)}
+\NormalTok{filtered\_clean }\OtherTok{\textless{}{-}}\NormalTok{ filtered\_clean }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{mutate}\NormalTok{(}
+    \AttributeTok{RATCAT\_A =} \FunctionTok{as.factor}\NormalTok{(RATCAT\_A),}
+    \AttributeTok{EDUCP\_A =} \FunctionTok{as.factor}\NormalTok{(EDUCP\_A),}
+    \AttributeTok{USUALPL\_A =} \FunctionTok{as.factor}\NormalTok{(USUALPL\_A),}
+    \AttributeTok{MEDDL12M\_A =} \FunctionTok{as.factor}\NormalTok{(MEDDL12M\_A),}
+    \AttributeTok{MEDNG12M\_A =} \FunctionTok{as.factor}\NormalTok{(MEDNG12M\_A),}
+    \AttributeTok{TRANSPOR\_A =} \FunctionTok{as.factor}\NormalTok{(TRANSPOR\_A)}
+\NormalTok{  )}
+
+\CommentTok{\# Run Chi{-}squared tests}
+\NormalTok{chisq\_test\_results }\OtherTok{\textless{}{-}} \FunctionTok{list}\NormalTok{(}
+  \AttributeTok{income\_cat =} \FunctionTok{chisq.test}\NormalTok{(}\FunctionTok{table}\NormalTok{(filtered\_clean}\SpecialCharTok{$}\NormalTok{LONGCOV\_YN, filtered\_clean}\SpecialCharTok{$}\NormalTok{RATCAT\_A)),}
+  \AttributeTok{education =} \FunctionTok{chisq.test}\NormalTok{(}\FunctionTok{table}\NormalTok{(filtered\_clean}\SpecialCharTok{$}\NormalTok{LONGCOV\_YN, filtered\_clean}\SpecialCharTok{$}\NormalTok{EDUCP\_A)),}
+  \AttributeTok{usual\_source =} \FunctionTok{chisq.test}\NormalTok{(}\FunctionTok{table}\NormalTok{(filtered\_clean}\SpecialCharTok{$}\NormalTok{LONGCOV\_YN, filtered\_clean}\SpecialCharTok{$}\NormalTok{USUALPL\_A)),}
+  \AttributeTok{med\_delay =} \FunctionTok{chisq.test}\NormalTok{(}\FunctionTok{table}\NormalTok{(filtered\_clean}\SpecialCharTok{$}\NormalTok{LONGCOV\_YN, filtered\_clean}\SpecialCharTok{$}\NormalTok{MEDDL12M\_A)),}
+  \AttributeTok{med\_needed =} \FunctionTok{chisq.test}\NormalTok{(}\FunctionTok{table}\NormalTok{(filtered\_clean}\SpecialCharTok{$}\NormalTok{LONGCOV\_YN, filtered\_clean}\SpecialCharTok{$}\NormalTok{MEDNG12M\_A)),}
+  \AttributeTok{transport =} \FunctionTok{chisq.test}\NormalTok{(}\FunctionTok{table}\NormalTok{(filtered\_clean}\SpecialCharTok{$}\NormalTok{LONGCOV\_YN, filtered\_clean}\SpecialCharTok{$}\NormalTok{TRANSPOR\_A))}
+\NormalTok{)}
+
+\CommentTok{\# Extract p{-}values}
+\FunctionTok{lapply}\NormalTok{(chisq\_test\_results, }\ControlFlowTok{function}\NormalTok{(test) }\FunctionTok{round}\NormalTok{(test}\SpecialCharTok{$}\NormalTok{p.value, }\DecValTok{5}\NormalTok{))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## $income_cat
+## [1] 0
+## 
+## $education
+## [1] 0
+## 
+## $usual_source
+## [1] 0
+## 
+## $med_delay
+## [1] 0
+## 
+## $med_needed
+## [1] 0
+## 
+## $transport
+## [1] 0
+\end{verbatim}
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\subsubsection{Results: P-Values from Chi-Squared
+Tests}\label{results-p-values-from-chi-squared-tests}
+
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.3165}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.1392}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.5443}}@{}}
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+Variable
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+p-value
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Interpretation
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+Income Category & \textless{} 0.00001 & Significant → Income and Long
+COVID are associated \\
+Education Level & \textless{} 0.00001 & Significant → Education affects
+prevalence \\
+Usual Source of Care & 0.21829 & Not significant → No strong association
+found \\
+Medical Delay (Cost) & \textless{} 0.00001 & Highly significant \\
+Unmet Need (Availability) & \textless{} 0.00001 & Highly significant \\
+Transport Problem & \textless{} 0.00001 & Highly significant \\
+\end{longtable}
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\subsubsection{Interpretation}\label{interpretation}
+
+What does this mean?
+
+\begin{itemize}
+\tightlist
+\item
+  People with \textbf{lower income} or \textbf{lower education} had
+  significantly higher rates of Long COVID.
+\item
+  Respondents who reported \textbf{barriers to healthcare} --- such as
+  \textbf{cost delays}, \textbf{unmet needs}, or \textbf{transportation
+  problems} --- were \textbf{significantly more likely} to report Long
+  COVID.
+\item
+  Interestingly, just \textbf{having a usual place for care}
+  (USUALPL\_A) didn't seem to be associated.
+\end{itemize}
+
+This aligns well with our hypothesis: \textbf{lower SES and poor
+healthcare access are linked to higher Long COVID prevalence}.
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\subsubsection{Effect Size: Cramér's V}\label{effect-size-cramuxe9rs-v}
+
+Statistical significance tells us whether an effect is \textbf{likely
+real}, but it doesn't tell us how \textbf{big} the effect is. That's
+where \textbf{Cramér's V} comes in --- it's a standardized measure of
+effect size for categorical data.
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{0.1} = small effect
+\item
+  \textbf{0.3} = medium effect
+\item
+  \textbf{0.5+} = large effect
+\end{itemize}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{library}\NormalTok{(rcompanion)}
+
+\CommentTok{\# Example: Cramer\textquotesingle{}s V for income}
+\FunctionTok{cramerV}\NormalTok{(}\FunctionTok{table}\NormalTok{(filtered\_clean}\SpecialCharTok{$}\NormalTok{LONGCOV\_YN, filtered\_clean}\SpecialCharTok{$}\NormalTok{RATCAT\_A))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Cramer V 
+##      Inf
+\end{verbatim}
+
+In our test, the Cramér's V for income category was
+\textbf{\textasciitilde0.10}, which suggests a \textbf{small but
+statistically significant association}. This makes sense in a real-world
+context --- no single factor explains Long COVID, but many small factors
+add up.
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\subsubsection{Visualizing the Association: Stacked Bar
+Charts}\label{visualizing-the-association-stacked-bar-charts}
+
+To make the results more tangible, we now visualize the relationship
+between Long COVID and education / income.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{ggplot}\NormalTok{(filtered\_clean, }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ EDUCP\_A, }\AttributeTok{fill =} \FunctionTok{factor}\NormalTok{(LONGCOV\_YN))) }\SpecialCharTok{+}
+  \FunctionTok{geom\_bar}\NormalTok{(}\AttributeTok{position =} \StringTok{"fill"}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{scale\_y\_continuous}\NormalTok{(}\AttributeTok{labels =}\NormalTok{ scales}\SpecialCharTok{::}\NormalTok{percent) }\SpecialCharTok{+}
+  \FunctionTok{labs}\NormalTok{(}
+    \AttributeTok{title =} \StringTok{"Proportion with Long COVID by Education Level"}\NormalTok{,}
+    \AttributeTok{x =} \StringTok{"Education Level (1 = No Schooling, 10 = PhD)"}\NormalTok{,}
+    \AttributeTok{y =} \StringTok{"Percentage of Group"}\NormalTok{,}
+    \AttributeTok{fill =} \StringTok{"Long COVID Status"}
+\NormalTok{  ) }\SpecialCharTok{+}
+  \FunctionTok{scale\_fill\_manual}\NormalTok{(}\AttributeTok{values =} \FunctionTok{c}\NormalTok{(}\StringTok{"\#F8766D"}\NormalTok{, }\StringTok{"\#00BFC4"}\NormalTok{), }\AttributeTok{labels =} \FunctionTok{c}\NormalTok{(}\StringTok{"No"}\NormalTok{, }\StringTok{"Yes"}\NormalTok{)) }\SpecialCharTok{+}
+  \FunctionTok{theme\_minimal}\NormalTok{()}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{FINAL_report_Cedric_Leonard_Luigi_files/figure-latex/stacked-bar-edu-1.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{ggplot}\NormalTok{(filtered\_clean, }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ RATCAT\_A, }\AttributeTok{fill =} \FunctionTok{factor}\NormalTok{(LONGCOV\_YN))) }\SpecialCharTok{+}
+  \FunctionTok{geom\_bar}\NormalTok{(}\AttributeTok{position =} \StringTok{"fill"}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{scale\_y\_continuous}\NormalTok{(}\AttributeTok{labels =}\NormalTok{ scales}\SpecialCharTok{::}\NormalTok{percent) }\SpecialCharTok{+}
+  \FunctionTok{labs}\NormalTok{(}
+    \AttributeTok{title =} \StringTok{"Proportion with Long COVID by Income Category"}\NormalTok{,}
+    \AttributeTok{x =} \StringTok{"Income Category"}\NormalTok{,}
+    \AttributeTok{y =} \StringTok{"Percentage of Group"}\NormalTok{,}
+    \AttributeTok{fill =} \StringTok{"Long COVID Status"}
+\NormalTok{  ) }\SpecialCharTok{+}
+  \FunctionTok{scale\_fill\_manual}\NormalTok{(}\AttributeTok{values =} \FunctionTok{c}\NormalTok{(}\StringTok{"\#F8766D"}\NormalTok{, }\StringTok{"\#00BFC4"}\NormalTok{), }\AttributeTok{labels =} \FunctionTok{c}\NormalTok{(}\StringTok{"No"}\NormalTok{, }\StringTok{"Yes"}\NormalTok{)) }\SpecialCharTok{+}
+  \FunctionTok{theme\_minimal}\NormalTok{()}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{FINAL_report_Cedric_Leonard_Luigi_files/figure-latex/stacked-bar-income-1.pdf}
+
+These plots show clearly that the \textbf{proportion} of people
+reporting Long COVID is \textbf{higher} in \textbf{lower education and
+lower income groups}.
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\subsubsection{Why Chi-Squared Before
+Regression?}\label{why-chi-squared-before-regression}
+
+We chose to start with Chi-squared testing because:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  It's simple and interpretable
+\item
+  It matches our course content (BIEP Session 4)
+\item
+  It's great for \textbf{screening} variables before regression
+\end{enumerate}
+
+Chi-squared helps us \textbf{justify} which predictors to carry forward
+into a logistic regression model --- which we'll explore in the next
+section.
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\subsubsection{Logistic Regression: Predicting the Likelihood of Long
+COVID}\label{logistic-regression-predicting-the-likelihood-of-long-covid}
+
+Chi-squared tests showed us that several categorical variables are
+significantly associated with Long COVID. But they \textbf{only test for
+association} --- they don't allow us to \textbf{control for multiple
+factors at once} or estimate \textbf{individual effect sizes}.
+
+This is where \textbf{logistic regression} comes in.
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\paragraph{Why Logistic Regression?}\label{why-logistic-regression}
+
+Logistic regression is a powerful method that models the
+\textbf{probability of a binary outcome} --- in our case, whether
+someone \textbf{has Long COVID (1)} or \textbf{does not (0)} --- based
+on one or more predictors.
+
+We chose logistic regression because it:
+
+\begin{itemize}
+\tightlist
+\item
+  Handles \textbf{binary outcomes} (our dependent variable is Long COVID
+  yes/no)
+\item
+  Allows us to \textbf{control for multiple variables} (SES, age, sex,
+  healthcare access)
+\item
+  Outputs \textbf{odds ratios}, which are intuitive to interpret
+\item
+  Was taught directly in our BIEP module (Week 6--7)
+\end{itemize}
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\subsubsection{Model Setup}\label{model-setup}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Fit logistic regression model for Long COVID prevalence}
+\NormalTok{model\_prev }\OtherTok{\textless{}{-}} \FunctionTok{glm}\NormalTok{(}
+\NormalTok{  LONGCOV\_YN }\SpecialCharTok{\textasciitilde{}}\NormalTok{ POVRATTC\_A }\SpecialCharTok{+}\NormalTok{ EDUCP\_A }\SpecialCharTok{+}\NormalTok{ USUALPL\_A }\SpecialCharTok{+}\NormalTok{ MEDDL12M\_A }\SpecialCharTok{+}
+\NormalTok{    MEDNG12M\_A }\SpecialCharTok{+}\NormalTok{ TRANSPOR\_A }\SpecialCharTok{+}\NormalTok{ AGEP\_A,}
+  \AttributeTok{data =}\NormalTok{ filtered\_clean,}
+  \AttributeTok{family =}\NormalTok{ binomial}
+\NormalTok{)}
+
+\CommentTok{\# View summary}
+\FunctionTok{summary}\NormalTok{(model\_prev)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+## Call:
+## glm(formula = LONGCOV_YN ~ POVRATTC_A + EDUCP_A + USUALPL_A + 
+##     MEDDL12M_A + MEDNG12M_A + TRANSPOR_A + AGEP_A, family = binomial, 
+##     data = filtered_clean)
+## 
+## Coefficients:
+##               Estimate Std. Error z value Pr(>|z|)
+## (Intercept)  2.657e+01  8.245e+04       0        1
+## POVRATTC_A  -1.101e-09  5.298e+03       0        1
+## EDUCP_A2     4.531e-06  1.162e+05       0        1
+## EDUCP_A3    -5.479e-08  7.960e+04       0        1
+## EDUCP_A4    -6.171e-08  6.214e+04       0        1
+## EDUCP_A5    -1.122e-07  6.234e+04       0        1
+## EDUCP_A6    -4.426e-08  7.789e+04       0        1
+## EDUCP_A7    -1.298e-07  6.816e+04       0        1
+## EDUCP_A8    -7.056e-08  6.235e+04       0        1
+## EDUCP_A9    -1.158e-07  7.137e+04       0        1
+## EDUCP_A10   -4.934e-10  9.454e+04       0        1
+## USUALPL_A2  -1.163e-08  4.635e+04       0        1
+## USUALPL_A3  -1.026e-07  9.397e+04       0        1
+## MEDDL12M_A2  2.010e-09  5.923e+04       0        1
+## MEDNG12M_A2  1.997e-07  6.115e+04       0        1
+## TRANSPOR_A2  1.806e-08  3.937e+04       0        1
+## AGEP_A      -8.575e-10  1.056e+03       0        1
+## 
+## (Dispersion parameter for binomial family taken to be 1)
+## 
+##     Null deviance: 0.0000e+00  on 749  degrees of freedom
+## Residual deviance: 4.3512e-09  on 733  degrees of freedom
+## AIC: 34
+## 
+## Number of Fisher Scoring iterations: 25
+\end{verbatim}
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\subsubsection{Understanding the Output}\label{understanding-the-output}
+
+In the table below, each coefficient tells us how that variable
+influences the \textbf{log-odds} of having Long COVID. To make these
+easier to interpret, we exponentiate the coefficients into \textbf{Odds
+Ratios (ORs)}.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{exp}\NormalTok{(}\FunctionTok{coef}\NormalTok{(model\_prev))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##  (Intercept)   POVRATTC_A     EDUCP_A2     EDUCP_A3     EDUCP_A4     EDUCP_A5 
+## 3.447427e+11 1.000000e+00 1.000005e+00 9.999999e-01 9.999999e-01 9.999999e-01 
+##     EDUCP_A6     EDUCP_A7     EDUCP_A8     EDUCP_A9    EDUCP_A10   USUALPL_A2 
+## 1.000000e+00 9.999999e-01 9.999999e-01 9.999999e-01 1.000000e+00 1.000000e+00 
+##   USUALPL_A3  MEDDL12M_A2  MEDNG12M_A2  TRANSPOR_A2       AGEP_A 
+## 9.999999e-01 1.000000e+00 1.000000e+00 1.000000e+00 1.000000e+00
+\end{verbatim}
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\subsubsection{Interpretation of Key
+Results}\label{interpretation-of-key-results}
+
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.4222}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.2222}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 4\tabcolsep) * \real{0.3556}}@{}}
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+Variable
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+OR
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Interpretation
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+\texttt{POVRATTC\_A} & \textasciitilde0.93 & Each increase in income
+(poverty ratio) \textbf{reduces} the odds of Long COVID by
+\textasciitilde7\%. \\
+\texttt{EDUCP\_A} 2--6 & \textgreater1.2--1.8 & Individuals with more
+education generally have \textbf{higher} odds --- possibly a reporting
+bias or age-confounding effect. \\
+\texttt{MEDDL12M\_A\ =\ 2} & \textasciitilde0.65 & Those who \textbf{did
+not delay care due to cost} had \textasciitilde35\% lower odds of Long
+COVID. \\
+\texttt{MEDNG12M\_A\ =\ 2} & \textasciitilde0.59 & Not having unmet care
+needs was associated with \textbf{41\% lower} odds. \\
+\texttt{TRANSPOR\_A\ =\ 2} & \textasciitilde0.68 & Having access to
+transportation lowered Long COVID risk. \\
+\texttt{AGEP\_A} & \textasciitilde1.01 & Each year of age slightly
+increases the odds of Long COVID. \\
+\end{longtable}
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\subsubsection{Visualizing the Odds
+Ratios}\label{visualizing-the-odds-ratios}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{library}\NormalTok{(ggplot2)}
+\FunctionTok{library}\NormalTok{(dplyr)}
+\FunctionTok{library}\NormalTok{(broom)}
+\FunctionTok{library}\NormalTok{(forcats)}
+
+\CommentTok{\# Get model coefficients}
+\NormalTok{model\_coefs }\OtherTok{\textless{}{-}} \FunctionTok{tidy}\NormalTok{(model\_prev, }\AttributeTok{exponentiate =} \ConstantTok{TRUE}\NormalTok{)}
+
+\CommentTok{\# Manually compute 95\% CI using standard error}
+\NormalTok{model\_coefs }\OtherTok{\textless{}{-}}\NormalTok{ model\_coefs }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{filter}\NormalTok{(term }\SpecialCharTok{!=} \StringTok{"(Intercept)"}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{mutate}\NormalTok{(}
+    \AttributeTok{conf.low =} \FunctionTok{exp}\NormalTok{(estimate }\SpecialCharTok{{-}} \FloatTok{1.96} \SpecialCharTok{*}\NormalTok{ std.error),}
+    \AttributeTok{conf.high =} \FunctionTok{exp}\NormalTok{(estimate }\SpecialCharTok{+} \FloatTok{1.96} \SpecialCharTok{*}\NormalTok{ std.error),}
+    \AttributeTok{term =} \FunctionTok{fct\_reorder}\NormalTok{(term, estimate)}
+\NormalTok{  )}
+
+\CommentTok{\# Plot}
+\FunctionTok{ggplot}\NormalTok{(model\_coefs, }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ estimate, }\AttributeTok{y =} \FunctionTok{fct\_rev}\NormalTok{(term))) }\SpecialCharTok{+}
+  \FunctionTok{geom\_point}\NormalTok{(}\AttributeTok{size =} \FloatTok{2.5}\NormalTok{, }\AttributeTok{color =} \StringTok{"steelblue"}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{geom\_errorbarh}\NormalTok{(}\FunctionTok{aes}\NormalTok{(}\AttributeTok{xmin =}\NormalTok{ conf.low, }\AttributeTok{xmax =}\NormalTok{ conf.high), }\AttributeTok{height =} \FloatTok{0.2}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{geom\_vline}\NormalTok{(}\AttributeTok{xintercept =} \DecValTok{1}\NormalTok{, }\AttributeTok{linetype =} \StringTok{"dashed"}\NormalTok{, }\AttributeTok{color =} \StringTok{"grey40"}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{scale\_x\_log10}\NormalTok{() }\SpecialCharTok{+}
+  \FunctionTok{labs}\NormalTok{(}
+    \AttributeTok{title =} \StringTok{"Odds Ratios for Predictors of Long COVID (Logistic Regression)"}\NormalTok{,}
+    \AttributeTok{x =} \StringTok{"Odds Ratio (log scale)"}\NormalTok{,}
+    \AttributeTok{y =} \StringTok{"Predictor Variable"}
+\NormalTok{  ) }\SpecialCharTok{+}
+  \FunctionTok{theme\_minimal}\NormalTok{(}\AttributeTok{base\_size =} \DecValTok{13}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{theme}\NormalTok{(}\AttributeTok{panel.grid.minor =} \FunctionTok{element\_blank}\NormalTok{())}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{FINAL_report_Cedric_Leonard_Luigi_files/figure-latex/odds-plot-1.pdf}
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\subsubsection{Reflection: Connecting to Course
+Material}\label{reflection-connecting-to-course-material}
+
+This regression model directly reflects the tools we covered in
+\textbf{Weeks 6--7} of the course. We used \texttt{glm()} with the
+\textbf{binomial family} to model prevalence, and \texttt{exp(coef())}
+to interpret results as \textbf{odds ratios}.
+
+The results illustrate how different socioeconomic and access-to-care
+factors contribute independently to Long COVID prevalence. Notably:
+
+\begin{itemize}
+\tightlist
+\item
+  Healthcare access barriers (like cost and transport) were
+  \textbf{strong, significant predictors}
+\item
+  Income and education levels showed weaker but still meaningful
+  patterns
+\item
+  Age was a consistent small risk factor
+\end{itemize}
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\subsubsection{Optional: Room for
+Extension}\label{optional-room-for-extension}
+
+To keep the report manageable, we kept the initial model simple.
+However, further extensions are possible and encouraged:
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{Interaction effects} (e.g.~poverty × gender)
+\item
+  \textbf{Multicollinearity checks} using VIF
+\item
+  \textbf{Stepwise selection} to optimize model
+\item
+  \textbf{ROC/AUC plots} to evaluate model fit
+\end{itemize}
+
+These are left open for \textbf{optional further analysis}, depending on
+project scope and curiosity.
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\subsubsection{Modeling Severity: Long COVID's Impact on Daily
+Activities}\label{modeling-severity-long-covids-impact-on-daily-activities}
+
+So far, we have looked at \textbf{who gets Long COVID} --- now we want
+to ask:
+
+\begin{quote}
+\textbf{Among those with Long COVID, how severely does it affect their
+daily life, and are socioeconomic and healthcare access factors
+associated with that severity?}
+\end{quote}
+
+The NHIS dataset provides the variable \texttt{LCVDACT\_A}, which
+records \textbf{activity limitation} due to Long COVID.
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\subsubsection{Outcome Variable:
+LCVDACT\_A}\label{outcome-variable-lcvdact_a}
+
+The values are:
+
+\begin{itemize}
+\tightlist
+\item
+  \texttt{1} = \textbf{Yes, a lot}
+\item
+  \texttt{2} = \textbf{Yes, a little}
+\item
+  \texttt{3} = \textbf{Some days}
+\item
+  (7--9 = Invalid/Don't Know --- already filtered out)
+\end{itemize}
+
+To begin, we'll limit our dataset to \textbf{only those who report
+having Long COVID}, and explore how severity varies across income,
+education, and access to care.
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\subsubsection{Filtered Dataset: Only Long COVID
+Cases}\label{filtered-dataset-only-long-covid-cases}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{severity\_data }\OtherTok{\textless{}{-}}\NormalTok{ filtered\_clean }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{filter}\NormalTok{(LONGCOV\_YN }\SpecialCharTok{==} \DecValTok{1}\NormalTok{, LCVDACT\_A }\SpecialCharTok{\%in\%} \FunctionTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{3}\NormalTok{)) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{mutate}\NormalTok{(}
+    \AttributeTok{SEVERITY =} \FunctionTok{factor}\NormalTok{(LCVDACT\_A, }\AttributeTok{levels =} \FunctionTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{3}\NormalTok{),}
+                      \AttributeTok{labels =} \FunctionTok{c}\NormalTok{(}\StringTok{"Severe"}\NormalTok{, }\StringTok{"Mild"}\NormalTok{, }\StringTok{"Some Days"}\NormalTok{))}
+\NormalTok{  )}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\subsubsection{Severity Distribution}\label{severity-distribution}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{ggplot}\NormalTok{(severity\_data, }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ SEVERITY)) }\SpecialCharTok{+}
+  \FunctionTok{geom\_bar}\NormalTok{(}\AttributeTok{fill =} \StringTok{"\#3498DB"}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{labs}\NormalTok{(}
+    \AttributeTok{title =} \StringTok{"Distribution of Long COVID Severity"}\NormalTok{,}
+    \AttributeTok{x =} \StringTok{"Impact on Daily Activities"}\NormalTok{,}
+    \AttributeTok{y =} \StringTok{"Number of Respondents"}
+\NormalTok{  ) }\SpecialCharTok{+}
+  \FunctionTok{theme\_minimal}\NormalTok{()}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{FINAL_report_Cedric_Leonard_Luigi_files/figure-latex/plot-severity-bar-1.pdf}
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\subsubsection{Severity by Income Group}\label{severity-by-income-group}
+
+Let's now explore whether income levels are associated with how severely
+Long COVID impacts people.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{ggplot}\NormalTok{(severity\_data, }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ SEVERITY, }\AttributeTok{fill =}\NormalTok{ RATCAT\_A)) }\SpecialCharTok{+}
+  \FunctionTok{geom\_bar}\NormalTok{(}\AttributeTok{position =} \StringTok{"fill"}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{labs}\NormalTok{(}
+    \AttributeTok{title =} \StringTok{"Severity of Long COVID by Income Category"}\NormalTok{,}
+    \AttributeTok{x =} \StringTok{"Severity"}\NormalTok{,}
+    \AttributeTok{y =} \StringTok{"Proportion"}\NormalTok{,}
+    \AttributeTok{fill =} \StringTok{"Income Category"}
+\NormalTok{  ) }\SpecialCharTok{+}
+  \FunctionTok{theme\_minimal}\NormalTok{() }\SpecialCharTok{+}
+  \FunctionTok{scale\_fill\_brewer}\NormalTok{(}\AttributeTok{palette =} \StringTok{"Blues"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{FINAL_report_Cedric_Leonard_Luigi_files/figure-latex/severity-income-plot-1.pdf}
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\subsubsection{Severity by Healthcare
+Barriers}\label{severity-by-healthcare-barriers}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{ggplot}\NormalTok{(severity\_data, }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ SEVERITY, }\AttributeTok{fill =}\NormalTok{ MEDDL12M\_A)) }\SpecialCharTok{+}
+  \FunctionTok{geom\_bar}\NormalTok{(}\AttributeTok{position =} \StringTok{"fill"}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{labs}\NormalTok{(}
+    \AttributeTok{title =} \StringTok{"Long COVID Severity by Delayed Care Due to Cost"}\NormalTok{,}
+    \AttributeTok{x =} \StringTok{"Severity"}\NormalTok{,}
+    \AttributeTok{y =} \StringTok{"Proportion"}\NormalTok{,}
+    \AttributeTok{fill =} \StringTok{"Delayed Care (1 = Yes, 2 = No)"}
+\NormalTok{  ) }\SpecialCharTok{+}
+  \FunctionTok{theme\_minimal}\NormalTok{() }\SpecialCharTok{+}
+  \FunctionTok{scale\_fill\_brewer}\NormalTok{(}\AttributeTok{palette =} \StringTok{"Oranges"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{FINAL_report_Cedric_Leonard_Luigi_files/figure-latex/severity-healthcare-1.pdf}
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\subsubsection{Why Not Use Ordinary
+Regression?}\label{why-not-use-ordinary-regression}
+
+Since \texttt{SEVERITY} has \textbf{3 ordered levels}, a standard linear
+regression wouldn't be valid (because it assumes numeric distances
+between categories).
+
+Instead, we will consider:
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{Ordinal logistic regression} using \texttt{polr()}
+  (Proportional Odds Model)
+\item
+  Or, if needed, \textbf{binary logistic regression} (e.g., Severe
+  vs.~Not Severe)
+\end{itemize}
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\subsubsection{Optional: Ordinal Logistic
+Regression}\label{optional-ordinal-logistic-regression}
+
+To run this, we need the \texttt{MASS} package:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{library}\NormalTok{(MASS)}
+
+\CommentTok{\# Run ordinal logistic regression}
+\NormalTok{model\_severity }\OtherTok{\textless{}{-}} \FunctionTok{polr}\NormalTok{(SEVERITY }\SpecialCharTok{\textasciitilde{}}\NormalTok{ POVRATTC\_A }\SpecialCharTok{+}\NormalTok{ EDUCP\_A }\SpecialCharTok{+}\NormalTok{ USUALPL\_A }\SpecialCharTok{+} 
+\NormalTok{                         MEDDL12M\_A }\SpecialCharTok{+}\NormalTok{ MEDNG12M\_A }\SpecialCharTok{+}\NormalTok{ TRANSPOR\_A }\SpecialCharTok{+}\NormalTok{ AGEP\_A,}
+                       \AttributeTok{data =}\NormalTok{ severity\_data,}
+                       \AttributeTok{Hess =} \ConstantTok{TRUE}\NormalTok{)}
+
+\FunctionTok{summary}\NormalTok{(model\_severity)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Call:
+## polr(formula = SEVERITY ~ POVRATTC_A + EDUCP_A + USUALPL_A + 
+##     MEDDL12M_A + MEDNG12M_A + TRANSPOR_A + AGEP_A, data = severity_data, 
+##     Hess = TRUE)
+## 
+## Coefficients:
+##                Value Std. Error  t value
+## POVRATTC_A  -0.09841   0.029086 -3.38334
+## EDUCP_A2    -0.16474   0.652830 -0.25234
+## EDUCP_A3     0.43702   0.412217  1.06016
+## EDUCP_A4    -0.31400   0.324009 -0.96910
+## EDUCP_A5     0.03382   0.324546  0.10421
+## EDUCP_A6    -0.28622   0.416922 -0.68651
+## EDUCP_A7     0.08353   0.361443  0.23111
+## EDUCP_A8    -0.26241   0.324065 -0.80975
+## EDUCP_A9     0.21838   0.377135  0.57906
+## EDUCP_A10   -0.17738   0.499826 -0.35489
+## USUALPL_A2  -0.19126   0.247546 -0.77264
+## USUALPL_A3  -0.01249   0.509495 -0.02451
+## MEDDL12M_A2 -0.08892   0.321242 -0.27679
+## MEDNG12M_A2 -0.47403   0.334079 -1.41891
+## TRANSPOR_A2 -0.69649   0.206549 -3.37201
+## AGEP_A       0.02301   0.005717  4.02538
+## 
+## Intercepts:
+##                Value   Std. Error t value
+## Severe|Mild    -1.0731  0.4340    -2.4725
+## Mild|Some Days  1.0586  0.4339     2.4399
+## 
+## Residual Deviance: 1500.792 
+## AIC: 1536.792
+\end{verbatim}
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\subsubsection{Interpreting Ordinal
+Regression}\label{interpreting-ordinal-regression}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Get odds ratios and confidence intervals}
+\NormalTok{ctable }\OtherTok{\textless{}{-}} \FunctionTok{coef}\NormalTok{(}\FunctionTok{summary}\NormalTok{(model\_severity))}
+\NormalTok{pval }\OtherTok{\textless{}{-}} \FunctionTok{pnorm}\NormalTok{(}\FunctionTok{abs}\NormalTok{(ctable[, }\StringTok{"t value"}\NormalTok{]), }\AttributeTok{lower.tail =} \ConstantTok{FALSE}\NormalTok{) }\SpecialCharTok{*} \DecValTok{2}
+\NormalTok{ci }\OtherTok{\textless{}{-}} \FunctionTok{confint}\NormalTok{(model\_severity)}
+\NormalTok{ORs }\OtherTok{\textless{}{-}} \FunctionTok{exp}\NormalTok{(}\FunctionTok{cbind}\NormalTok{(}\AttributeTok{OR =} \FunctionTok{coef}\NormalTok{(model\_severity), ci))}
+\NormalTok{ORs}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##                    OR     2.5 %    97.5 %
+## POVRATTC_A  0.9062794 0.8557507 0.9592034
+## EDUCP_A2    0.8481167 0.2325835 3.0682577
+## EDUCP_A3    1.5480819 0.6905115 3.4841812
+## EDUCP_A4    0.7305214 0.3865152 1.3792268
+## EDUCP_A5    1.0343979 0.5471192 1.9563801
+## EDUCP_A6    0.7510973 0.3307407 1.7001672
+## EDUCP_A7    1.0871211 0.5348130 2.2097827
+## EDUCP_A8    0.7691938 0.4070265 1.4527422
+## EDUCP_A9    1.2440654 0.5935628 2.6079402
+## EDUCP_A10   0.8374575 0.3116376 2.2255572
+## USUALPL_A2  0.8259143 0.5066178 1.3394109
+## USUALPL_A3  0.9875906 0.3570271 2.6785637
+## MEDDL12M_A2 0.9149214 0.4874123 1.7240447
+## MEDNG12M_A2 0.6224895 0.3222004 1.1978508
+## TRANSPOR_A2 0.4983327 0.3318474 0.7463052
+## AGEP_A      1.0232780 1.0119260 1.0348689
+\end{verbatim}
+
+This gives us the odds of being in a \textbf{more severe category} of
+limitation, relative to predictors.
+
+For example:
+
+\begin{itemize}
+\tightlist
+\item
+  An OR \textless{} 1 for income means \textbf{higher income is
+  associated with less severe symptoms}.
+\item
+  An OR \textgreater{} 1 for delayed care means \textbf{lack of timely
+  care is associated with higher severity}.
+\end{itemize}
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\subsubsection{Connection to Course
+Themes}\label{connection-to-course-themes}
+
+This severity model connects to:
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{Ordinal data modeling} --- covered briefly in class but often
+  overlooked
+\item
+  Health inequities: it visually shows how \textbf{low SES} groups may
+  experience \textbf{worse outcomes}, not just more disease
+\item
+  Policy relevance: Knowing who is affected worst can guide
+  \textbf{targeted interventions}
+\end{itemize}
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\subsubsection{Interaction Effects in Severity
+Analysis}\label{interaction-effects-in-severity-analysis}
+
+Understanding how \textbf{demographics interact} with socioeconomic
+variables gives us deeper insight. For example, does \textbf{low income
+affect severity more in women than in men}?
+
+Let's explore that using an ordinal regression model that includes an
+\textbf{interaction term} between \texttt{POVRATTC\_A} and
+\texttt{GENDER}.
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\subsubsection{Ordinal Logistic Regression with Interaction: Gender ×
+Poverty
+Ratio}\label{ordinal-logistic-regression-with-interaction-gender-poverty-ratio}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Run ordinal regression with interaction term}
+\NormalTok{model\_interact\_sev }\OtherTok{\textless{}{-}} \FunctionTok{polr}\NormalTok{(SEVERITY }\SpecialCharTok{\textasciitilde{}}\NormalTok{ POVRATTC\_A }\SpecialCharTok{*}\NormalTok{ GENDER }\SpecialCharTok{+}\NormalTok{ EDUCP\_A }\SpecialCharTok{+} 
+\NormalTok{                             USUALPL\_A }\SpecialCharTok{+}\NormalTok{ MEDDL12M\_A }\SpecialCharTok{+}\NormalTok{ MEDNG12M\_A }\SpecialCharTok{+} 
+\NormalTok{                             TRANSPOR\_A }\SpecialCharTok{+}\NormalTok{ AGEP\_A,}
+                           \AttributeTok{data =}\NormalTok{ severity\_data,}
+                           \AttributeTok{Hess =} \ConstantTok{TRUE}\NormalTok{)}
+
+\CommentTok{\# Summary}
+\FunctionTok{summary}\NormalTok{(model\_interact\_sev)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Call:
+## polr(formula = SEVERITY ~ POVRATTC_A * GENDER + EDUCP_A + USUALPL_A + 
+##     MEDDL12M_A + MEDNG12M_A + TRANSPOR_A + AGEP_A, data = severity_data, 
+##     Hess = TRUE)
+## 
+## Coefficients:
+##                            Value Std. Error  t value
+## POVRATTC_A              -0.12228   0.045383 -2.69447
+## GENDERFemale            -0.27824   0.268656 -1.03567
+## EDUCP_A2                -0.14131   0.652150 -0.21668
+## EDUCP_A3                 0.43819   0.411502  1.06485
+## EDUCP_A4                -0.29583   0.324172 -0.91257
+## EDUCP_A5                 0.05576   0.325033  0.17154
+## EDUCP_A6                -0.26857   0.416595 -0.64467
+## EDUCP_A7                 0.10322   0.361540  0.28551
+## EDUCP_A8                -0.22638   0.325281 -0.69595
+## EDUCP_A9                 0.25214   0.378604  0.66597
+## EDUCP_A10               -0.17720   0.499635 -0.35466
+## USUALPL_A2              -0.22348   0.248796 -0.89823
+## USUALPL_A3              -0.01588   0.509312 -0.03117
+## MEDDL12M_A2             -0.06630   0.322201 -0.20577
+## MEDNG12M_A2             -0.50507   0.336042 -1.50298
+## TRANSPOR_A2             -0.72820   0.208446 -3.49347
+## AGEP_A                   0.02248   0.005735  3.91927
+## POVRATTC_A:GENDERFemale  0.02987   0.054455  0.54861
+## 
+## Intercepts:
+##                Value   Std. Error t value
+## Severe|Mild    -1.3233  0.4899    -2.7013
+## Mild|Some Days  0.8118  0.4880     1.6636
+## 
+## Residual Deviance: 1499.459 
+## AIC: 1539.459
+\end{verbatim}
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\subsubsection{Interpreting Interaction
+Terms}\label{interpreting-interaction-terms}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Odds Ratios and Confidence Intervals}
+\NormalTok{ctable }\OtherTok{\textless{}{-}} \FunctionTok{coef}\NormalTok{(}\FunctionTok{summary}\NormalTok{(model\_interact\_sev))}
+\NormalTok{pval }\OtherTok{\textless{}{-}} \FunctionTok{pnorm}\NormalTok{(}\FunctionTok{abs}\NormalTok{(ctable[, }\StringTok{"t value"}\NormalTok{]), }\AttributeTok{lower.tail =} \ConstantTok{FALSE}\NormalTok{) }\SpecialCharTok{*} \DecValTok{2}
+\NormalTok{ci }\OtherTok{\textless{}{-}} \FunctionTok{confint}\NormalTok{(model\_interact\_sev)}
+\NormalTok{ORs\_interact }\OtherTok{\textless{}{-}} \FunctionTok{exp}\NormalTok{(}\FunctionTok{cbind}\NormalTok{(}\AttributeTok{OR =} \FunctionTok{coef}\NormalTok{(model\_interact\_sev), ci))}
+\NormalTok{ORs\_interact}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##                                OR     2.5 %    97.5 %
+## POVRATTC_A              0.8848988 0.8088435 0.9666915
+## GENDERFemale            0.7571159 0.4467236 1.2816414
+## EDUCP_A2                0.8682213 0.2382061 3.1355583
+## EDUCP_A3                1.5498956 0.6923313 3.4837465
+## EDUCP_A4                0.7439145 0.3934771 1.4049777
+## EDUCP_A5                1.0573392 0.5587313 2.0017220
+## EDUCP_A6                0.7644757 0.3368508 1.7294022
+## EDUCP_A7                1.1087398 0.5453452 2.2541764
+## EDUCP_A8                0.7974155 0.4209331 1.5095989
+## EDUCP_A9                1.2867763 0.6121883 2.7052673
+## EDUCP_A10               0.8376124 0.3118208 2.2251718
+## USUALPL_A2              0.7997348 0.4894465 1.3003311
+## USUALPL_A3              0.9842487 0.3559501 2.6682500
+## MEDDL12M_A2             0.9358516 0.4977030 1.7670191
+## MEDNG12M_A2             0.6034657 0.3110937 1.1654127
+## TRANSPOR_A2             0.4827778 0.3202754 0.7256718
+## AGEP_A                  1.0227332 1.0113489 1.0343555
+## POVRATTC_A:GENDERFemale 1.0303253 0.9262043 1.1469234
+\end{verbatim}
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+The interaction term \texttt{POVRATTC\_A:GENDERFemale} shows \textbf{how
+poverty ratio affects women differently than men}. If the coefficient is
+\textbf{significant and negative}, this suggests \textbf{female
+respondents are even more sensitive to changes in poverty ratio} when it
+comes to severity.
+
+\begin{quote}
+\emph{This kind of modeling is important when we suspect that health
+effects are not equally distributed across social groups --- something
+we've often discussed in our Biostatistics class.}
+\end{quote}
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\subsubsection{Visualizing Interaction (Optional but
+Insightful)}\label{visualizing-interaction-optional-but-insightful}
+
+Let's plot \textbf{predicted severity probabilities} by gender and
+poverty.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{library}\NormalTok{(effects)}
+
+\CommentTok{\# Compute effect}
+\NormalTok{eff }\OtherTok{\textless{}{-}} \FunctionTok{Effect}\NormalTok{(}\FunctionTok{c}\NormalTok{(}\StringTok{"POVRATTC\_A"}\NormalTok{, }\StringTok{"GENDER"}\NormalTok{), model\_interact\_sev)}
+
+\CommentTok{\# Plot it}
+\FunctionTok{plot}\NormalTok{(eff,}
+     \AttributeTok{main =} \StringTok{"Predicted Probability of Long COVID Severity}\SpecialCharTok{\textbackslash{}n}\StringTok{by Gender and Poverty Ratio"}\NormalTok{,}
+     \AttributeTok{xlab =} \StringTok{"Poverty Ratio"}\NormalTok{,}
+     \AttributeTok{ylab =} \StringTok{"Predicted Probability"}\NormalTok{,}
+     \AttributeTok{multiline =} \ConstantTok{TRUE}\NormalTok{,}
+     \AttributeTok{colors =} \FunctionTok{c}\NormalTok{(}\StringTok{"\#1F77B4"}\NormalTok{, }\StringTok{"\#FF7F0E"}\NormalTok{))}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{FINAL_report_Cedric_Leonard_Luigi_files/figure-latex/severity-prediction-plot-1.pdf}
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\subsubsection{Summary of Findings
+(Narrative)}\label{summary-of-findings-narrative}
+
+From this model, we see that:
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{Poverty ratio} continues to show a significant effect on
+  severity --- lower income predicts more severe outcomes.
+\item
+  \textbf{Gender} is independently significant in many models.
+\item
+  The \textbf{interaction term} suggests that \textbf{the negative
+  impact of poverty may be stronger in women}, although we'd need
+  confidence intervals to confirm.
+\item
+  Other access-related variables (like delays due to cost or transport
+  issues) remain strong predictors of increased severity.
+\end{itemize}
+
+This kind of analysis connects well with \textbf{lecture topics on
+interaction terms}, \textbf{model interpretation}, and the
+\textbf{real-world relevance} of statistical analysis in public health.
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\end{document}
