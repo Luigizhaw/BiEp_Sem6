@@ -22,7 +22,7 @@ library(forcats)
 
 ### Introduction
 
-The COVID-19 pandemic has had massive health and societal impacts around the world. However, its long-term effects — especially **Long COVID** — are still being studied and better understood.
+The COVID-19 pandemic has had massive health and societal impacts around the world. However, its long-term effects, especially **Long COVID**, are still being studied and better understood.
 
 Long COVID refers to symptoms that persist for weeks or even months after initial recovery from the virus. These symptoms can include fatigue, shortness of breath, brain fog, and others that significantly reduce quality of life. For some people, it can mean missing work, struggling with daily activities, and increased medical expenses.
 
@@ -34,14 +34,14 @@ In this project, we asked:
 
 ### Why This Question?
 
-We chose this topic because Long COVID is more than just a medical condition — it’s a public health issue. People with fewer resources or access to care may be more likely to:
+We chose this topic because Long COVID is more than just a medical condition. It’s a public health issue. People with fewer resources or access to care may be more likely to:
 
 - Be exposed to COVID-19 due to working in frontline jobs  
 - Have untreated pre-existing conditions  
 - Delay care because of cost or lack of insurance  
 - Live in environments with limited healthcare access
 
-As part of our **Biostatistics and Epidemiology module**, we wanted to apply statistical techniques that allow us to answer real-world public health questions — not just whether Long COVID is happening, but **who is most affected**, and **how bad** the impact is.
+As part of our **Biostatistics and Epidemiology module**, we wanted to apply statistical techniques that allow us to answer real-world public health questions not just whether Long COVID is happening, but **who is most affected**, and **how bad** the impact is.
 
 ---
 
@@ -78,7 +78,7 @@ Here’s a table showing which variables we kept and what they mean:
 | `AGEP_A`        | Age of respondent (filtered to 18–65 years)                                |
 | `SEX_A`         | Sex of respondent (1 = Male, 2 = Female)                                   |
 
-These variables were chosen to reflect different dimensions of **socioeconomic status (SES)** and **access to healthcare** — the main factors in our hypothesis.
+These variables were chosen to reflect different dimensions of **socioeconomic status (SES)** and **access to healthcare**. Those resemble the main factors in our hypothesis.
 
 ---
 
@@ -162,7 +162,7 @@ From the descriptive statistics, some early patterns emerged:
 - Respondents with **Long COVID** tend to have a **lower average poverty ratio**, meaning they are relatively **less wealthy**.
 - On average, they also report **slightly lower education levels**.
 - Healthcare access indicators like **delay due to cost**, **unmet medical needs**, and **transportation issues** show **worse averages** in the Long COVID group.
-- The mean age is also slightly higher in this group — which matches expectations from the literature on risk factors.
+- The mean age is also slightly higher in this group. This matches expectations from the literature on risk factors.
 
 We were curious: **Are these differences meaningful** or are they just noise? To answer that, we needed to go beyond means and start looking at **distribution and significance**.
 
@@ -267,7 +267,7 @@ So far, our exploratory analysis has shown that:
 - **Poverty**, **education**, and **healthcare access** vary noticeably between groups.
 - These differences are visually clear — but are they **statistically significant**?
 
-In the next section, we will run **Chi-squared tests** and **logistic regressions** to determine whether these differences are due to chance — or part of a bigger, systemic pattern.
+In the next section, we will run **Chi-squared tests** and **logistic regressions** to determine whether these differences are due to chance or part of a bigger, systemic pattern.
 
 ---
 
@@ -277,7 +277,7 @@ In the next section, we will run **Chi-squared tests** and **logistic regression
 
 While the descriptive phase revealed notable differences between respondents with and without Long COVID, we now need to test whether these observed differences are **statistically significant** or could have occurred by chance.
 
-To do this, we turn to the **Chi-squared test of independence**, which is particularly suited to **categorical data** — such as education level, income group, or access to care.
+To do this, we turn to the **Chi-squared test of independence**, which is particularly suited to **categorical data** such as education level, income group, or access to care.
 
 ---
 
@@ -342,7 +342,7 @@ lapply(chisq_test_results, function(test) round(test$p.value, 5))
 What does this mean?
 
 - People with **lower income** or **lower education** had significantly higher rates of Long COVID.
-- Respondents who reported **barriers to healthcare** — such as **cost delays**, **unmet needs**, or **transportation problems** — were **significantly more likely** to report Long COVID.
+- Respondents who reported **barriers to healthcare** such as **cost delays**, **unmet needs**, or **transportation problems** were **significantly more likely** to report Long COVID.
 - Interestingly, just **having a usual place for care** (USUALPL_A) didn’t seem to be associated.
 
 This aligns well with our hypothesis: **lower SES and poor healthcare access are linked to higher Long COVID prevalence**.
@@ -351,7 +351,7 @@ This aligns well with our hypothesis: **lower SES and poor healthcare access are
 
 ### Effect Size: Cramér’s V
 
-Statistical significance tells us whether an effect is **likely real**, but it doesn’t tell us how **big** the effect is. That’s where **Cramér’s V** comes in — it’s a standardized measure of effect size for categorical data.
+Statistical significance tells us whether an effect is **likely real**, but it doesn’t tell us how **big** the effect is. That’s where **Cramér’s V** comes in. It’s a standardized measure of effect size for categorical data.
 
 - **0.1** = small effect
 - **0.3** = medium effect
@@ -364,7 +364,7 @@ library(rcompanion)
 cramerV(table(filtered_clean$LONGCOV_YN, filtered_clean$RATCAT_A))
 ```
 
-In our test, the Cramér's V for income category was **~0.10**, which suggests a **small but statistically significant association**. This makes sense in a real-world context — no single factor explains Long COVID, but many small factors add up.
+In our test, the Cramér's V for income category was **~0.10**, which suggests a **small but statistically significant association**. This makes sense in a real-world context, since no single factor explains Long COVID, but many small factors add up.
 
 ---
 
@@ -418,7 +418,7 @@ We chose to start with Chi-squared testing because:
 2. It matches our course content (BIEP Session 4)
 3. It’s great for **screening** variables before regression
 
-Chi-squared helps us **justify** which predictors to carry forward into a logistic regression model — which we’ll explore in the next section.
+Chi-squared helps us **justify** which predictors to carry forward into a logistic regression model, which we’ll explore in the next section.
 
 ---
 
@@ -434,7 +434,7 @@ This is where **logistic regression** comes in.
 
 #### Why Logistic Regression?
 
-Logistic regression is a powerful method that models the **probability of a binary outcome** — in our case, whether someone **has Long COVID (1)** or **does not (0)** — based on one or more predictors.
+Logistic regression is a powerful method that models the **probability of a binary outcome**. In our case, whether someone **has Long COVID (1)** or **does not (0)** was based on one or more predictors.
 
 We chose logistic regression because it:
 
@@ -556,7 +556,7 @@ These are left open for **optional further analysis**, depending on project scop
 
 ### Modeling Severity: Long COVID's Impact on Daily Activities
 
-So far, we have looked at **who gets Long COVID** — now we want to ask:
+So far, we have looked at **who gets Long COVID**. Now we want to ask:
 
 > **Among those with Long COVID, how severely does it affect their daily life, and are socioeconomic and healthcare access factors associated with that severity?**
 
@@ -694,7 +694,7 @@ For example:
 
 This severity model connects to:
 
-- **Ordinal data modeling** — covered briefly in class but often overlooked
+- **Ordinal data modeling** was covered briefly in class but often overlooked
 - Health inequities: it visually shows how **low SES** groups may experience **worse outcomes**, not just more disease
 - Policy relevance: Knowing who is affected worst can guide **targeted interventions**
 
@@ -741,7 +741,7 @@ ORs_interact
 
 The interaction term `POVRATTC_A:GENDERFemale` shows **how poverty ratio affects women differently than men**. If the coefficient is **significant and negative**, this suggests **female respondents are even more sensitive to changes in poverty ratio** when it comes to severity.
 
-> *This kind of modeling is important when we suspect that health effects are not equally distributed across social groups — something we've often discussed in our Biostatistics class.*
+> *This kind of modeling is important when we suspect that health effects are not equally distributed across social groups. This was something we've often discussed in our Biostatistics class.*
 
 ---
 
@@ -770,7 +770,7 @@ plot(eff,
 
 From this model, we see that:
 
-- **Poverty ratio** continues to show a significant effect on severity — lower income predicts more severe outcomes.
+- **Poverty ratio** continues to show a significant effect on severity, since lower income predicts more severe outcomes.
 - **Gender** is independently significant in many models.
 - The **interaction term** suggests that **the negative impact of poverty may be stronger in women**, although we’d need confidence intervals to confirm.
 - Other access-related variables (like delays due to cost or transport issues) remain strong predictors of increased severity.
